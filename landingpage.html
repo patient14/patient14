@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient 14</title>
+
+    <style>
+        @font-face {
+            font-family: 'CourierPolski1941';
+            src: url('fonts/zai_CourierPolski1941.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh; 
+            object-fit: cover; 
+            z-index: -1;
+        }
+
+        .button {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 35px;
+            color: white;
+            font-family: 'Cormorant Garamond', serif;
+            cursor: pointer;
+            transition: opacity 2s ease;
+            animation: float 5s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%   { transform: translateX(-50%) translateY(0); }
+            50%  { transform: translateX(-50%) translateY(-10px); }
+            100% { transform: translateX(-50%) translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<video autoplay muted loop>
+    <source src="logo-background.mp4" type="video/mp4">
+</video>
+
+<div class="button" id="button">Click to start</div>
+
+<script>
+    document.getElementById('button').addEventListener('click', function() {
+        this.style.opacity = 0;
+        setTimeout(function() {
+            window.location.href = "main.html";
+        }, 2000);
+    });
+</script>
+
+
+</body>
+</html>
