@@ -1,7 +1,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg: #0a0a0a;
+  --bg: #000000;
   --text: #e8e2d9;
   --text-dim: #9a9189;
   --accent: #c8b89a;
@@ -20,7 +20,7 @@ body {
   cursor: default;
 }
 
-/* ── NOISE OVERLAY ── */
+/*NOISE OVERLAY*/
 body::before {
   content: '';
   position: fixed;
@@ -31,14 +31,14 @@ body::before {
   z-index: 1000;
 }
 
-/* ── SCROLL WRAPPER ── */
+/*SCROLL WRAPPER*/
 .story {
   max-width: 860px;
   margin: 0 auto;
   padding: 0 40px 200px;
 }
 
-/* ── CHAPTER HEADER ── */
+/*CHAPTER HEADER*/
 .chapter-header {
   height: 100vh;
   display: flex;
@@ -89,7 +89,7 @@ body::before {
 @keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:0.9} }
 @keyframes fadeIn { to { opacity: 1; } }
 
-/* ── LINES BLOCK ── */
+/*LINES BLOCK */
 .lines {
   max-width: 600px;
   margin: 0 auto;
@@ -151,6 +151,13 @@ body::before {
   display: block;
 }
 
+#opacity {
+  display: block;
+  margin: 0 auto;
+  opacity: 0.6;
+  width: 100%;
+}
+
 .chapter-break {
   text-align: center;
   padding: 120px 0 60px;
@@ -187,6 +194,7 @@ body::before {
 .thought {
   font-style: italic;
   color: var(--text-dim);
+  font-size: 20px;
 }
 
 /* emphasis */
@@ -262,4 +270,3 @@ body::before {
   text-transform: uppercase;
   animation: fadeIn 3s ease 2s both;
 }
-
