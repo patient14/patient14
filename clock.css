@@ -1,0 +1,96 @@
+/*CLOCK ANIMATION*/
+.hidden {
+  display: none;
+}
+
+.clock-display {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 30px;
+}
+
+.clock-time {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  white-space: nowrap;
+  transform-origin: center center;
+}
+
+.clock-time:nth-child(1) {
+  animation: scaleTime1 0.4s ease forwards;
+}
+
+.clock-time:nth-child(2) {
+  animation: scaleTime2 0.4s ease forwards;
+}
+
+.clock-time:nth-child(3) {
+  animation: scaleTime3 0.4s ease forwards;
+}
+
+.clock-time:nth-child(4) {
+  animation: scaleTime4 0.4s ease forwards;
+}
+
+.beep-sound {
+  animation: beepFlash 0.3s ease forwards;
+}
+
+@keyframes scaleTime1 {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes scaleTime2 {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.15);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.15);
+  }
+}
+
+@keyframes scaleTime3 {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.3);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.3);
+  }
+}
+
+@keyframes scaleTime4 {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.45);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.45);
+  }
+}
+
+@keyframes beepFlash {
+  0% {
+    opacity: 0;
+    color: var(--accent);
+  }
+  50% {
+    color: var(--accent);
+  }
+  100% {
+    opacity: 1;
+    color: var(--text);
+  }
+}

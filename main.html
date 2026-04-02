@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
 <script src="main.js" defer></script>
 <link rel="stylesheet" href="main.css">
+<link rel="stylesheet" href="clock.css">
 </head>
 <body>
 
@@ -15,7 +16,7 @@
   <div class="chapter-header">
     <div class="chapter-label">Chapter One</div>
     <h1 class="chapter-title">Bennett</h1>
-    <div class="chapter-meta">9:00 am — 120 Lars Street</div>
+    <div class="chapter-meta">8:00 am — 120 Lars Street</div>
     <div class="chapter-divider"></div>
     <div class="scroll-hint">
       scroll
@@ -24,13 +25,26 @@
 
   <div class="panel">
     <div class="panel-inner">
-      <img src="phone1.png" alt="phone" class="panel-art">
+      <img src="/assets/chapter1/phone1.png" alt="phone" class="panel-art">
     </div>
   </div>
 
   <div class="lines">
-    <p>I was already awake before the alarm went off.</p>
-    <p><span class="thought">I don't know how long I'd been staring at the ceiling. Long enough.</span></p>
+    <p><span class="thought">You stare at your ceiling wide awake, way before your alarm was about to ring.<br id="clock-start">
+                                <span class="clock-display">
+                                  <span class="clock-time hidden">8:05</span>
+                                  <span class="clock-time hidden">8:10</span>
+                                  <span class="clock-time hidden">8:15</span>
+                                  <span class="clock-time hidden">8:20</span>
+                                </span><br>
+                                <span class="beep-sound hidden">BEEP</span><br>
+                                <span class="beep-sound hidden">BEEP</span><br>
+                                <span class="beep-sound hidden">BEEP</span><br>
+
+    </span></p>
+    <p><span class="thought">Your morning routine is redundant but simple.</span></p>
+        <img src="assets/chapter1/morning_routine.png" alt="Routine list" class="panel-art">
+        <img src="assets/chapter1/food.png" alt="food" class="panel-art">
   </div>
 
   <div class="panel">
