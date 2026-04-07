@@ -8,7 +8,14 @@
   --panel-bg: #111;
 }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
 
 body {
   background: var(--bg);
@@ -20,7 +27,6 @@ body {
   cursor: default;
 }
 
-/*NOISE OVERLAY*/
 body::before {
   content: '';
   position: fixed;
@@ -31,14 +37,24 @@ body::before {
   z-index: 1000;
 }
 
-/*SCROLL WRAPPER*/
+.video-bg {
+  position: relative;
+  width: 100%;
+  line-height: 0;
+}
+
+.video-bg video {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 .story {
   max-width: 860px;
   margin: 0 auto;
   padding: 0 40px 200px;
 }
 
-/*CHAPTER HEADER*/
 .chapter-header {
   height: 100vh;
   display: flex;
@@ -89,7 +105,6 @@ body::before {
 @keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:0.9} }
 @keyframes fadeIn { to { opacity: 1; } }
 
-/*LINES BLOCK */
 .lines {
   max-width: 600px;
   margin: 0 auto;
@@ -112,7 +127,6 @@ body::before {
 
 .lines p:last-child { margin-bottom: 0; }
 
-/* ── SCENE ACTION ── */
 .scene-action {
   font-family: 'Cormorant Garamond', serif;
   font-size: 13px;
@@ -197,7 +211,7 @@ body::before {
   font-size: 20px;
 }
 
-/* emphasis */
+/* emphasis bold text*/
 .em-line {
   display: block;
   font-family: 'Cormorant Garamond', serif;
@@ -269,4 +283,14 @@ body::before {
   letter-spacing: 0.3em;
   text-transform: uppercase;
   animation: fadeIn 3s ease 2s both;
+}
+
+#pieces {
+  animation: float 3s ease-in-out infinite;
+  transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
+}
+
+#pieces:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 8px rgba(255, 240, 180, 0.8));
 }
