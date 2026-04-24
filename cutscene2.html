@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient 14</title>
+  <link rel="stylesheet" href="cutscene2.css">
+</head>
+<body>
+
+  <div id="video-section" class="locked">
+    <video id="intro-video" autoplay playsinline>
+      <source src="videos/room.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <script>
+    const video = document.getElementById('intro-video');
+
+    function blockScroll(e) { e.preventDefault(); }
+    const wheelHandler = (e) => blockScroll(e);
+    const touchHandler = (e) => blockScroll(e);
+    const keyHandler = (e) => {
+      if (['ArrowUp','ArrowDown','PageUp','PageDown','Space','Home','End'].includes(e.code)) {
+        e.preventDefault();
+      }
+    };
+
+    window.addEventListener('wheel', wheelHandler, { passive: false });
+    window.addEventListener('touchmove', touchHandler, { passive: false });
+    window.addEventListener('keydown', keyHandler);
+
+    video.addEventListener('ended', () => {
+      window.removeEventListener('wheel', wheelHandler);
+      window.removeEventListener('touchmove', touchHandler);
+      window.removeEventListener('keydown', keyHandler);
+      setTimeout(() => { window.location.href = 'morse.html'; }, 500);
+    });
+  </script>
+</body>
+</html>

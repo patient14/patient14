@@ -1,0 +1,2639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient 14</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=EB+Garamond:ital,wght@0,400;1,400&family=Share+Tech+Mono&family=Special+Elite&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
+    .scene {
+      position: fixed;
+      inset: 0;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+      z-index: 1;
+    }
+    .scene.active {
+      display: block;
+      opacity: 1;
+    }
+    #scene-story, #scene-story2, #scene-story3, #scene-75, #scene-story4, #scene-story5, #scene-story6, #scene-final-text {
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: #000000;
+      color: #e8e2d9;
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 18px;
+      line-height: 1.85;
+      scrollbar-width: none;
+    }
+
+    #scene-landing {
+      width: 100vw; height: 100vh; overflow: hidden;
+    }
+    #landing-video {
+      position: absolute; top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      object-fit: cover; z-index: 0;
+    }
+    #landing-btn {
+      position: absolute;
+      bottom: 100px; left: 50%;
+      transform: translateX(-50%);
+      font-size: 35px; color: white;
+      font-family: 'Cormorant Garamond', serif;
+      cursor: pointer;
+      animation: landingFloat 5s ease-in-out infinite;
+      z-index: 10;
+      transition: opacity 0.5s ease;
+      background: none; border: none;
+      user-select: none;
+    }
+    @keyframes landingFloat {
+      0%   { transform: translateX(-50%) translateY(0); }
+      50%  { transform: translateX(-50%) translateY(-10px); }
+      100% { transform: translateX(-50%) translateY(0); }
+    }
+    #landing-fade {
+      position: absolute; inset: 0;
+      background: #000; opacity: 1; z-index: 9999;
+      pointer-events: none; transition: opacity 1s ease;
+    }
+    #scene-story::-webkit-scrollbar, #scene-story2::-webkit-scrollbar, #scene-story3::-webkit-scrollbar, #scene-75::-webkit-scrollbar, #scene-story4::-webkit-scrollbar, #scene-story5::-webkit-scrollbar, #scene-story6::-webkit-scrollbar { display: none; }
+
+    #scene-story::before, #scene-story2::before, #scene-story3::before, #scene-75::before, #scene-story4::before, #scene-story5::before, #scene-story6::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+      opacity: 0.35; pointer-events: none; z-index: 1000;
+    }
+
+    .video-bg { position: relative; width: 100%; line-height: 0; }
+    .video-bg video { width: 100%; height: auto; display: block; }
+
+    .story {
+      max-width: 860px; margin: 0 auto;
+      padding: 0 40px 200px;
+    }
+
+    .chapter-header {
+      height: 100vh; display: flex; flex-direction: column;
+      justify-content: center; align-items: center; text-align: center;
+      position: relative; opacity: 0;
+      animation: storyFadeIn 2s ease 0.5s forwards;
+    }
+    @keyframes storyFadeIn { to { opacity: 1; } }
+
+    .chapter-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px; letter-spacing: 0.35em;
+      text-transform: uppercase; color: #9a9189; margin-bottom: 24px;
+    }
+    .chapter-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(48px, 8vw, 88px); font-weight: 300;
+      letter-spacing: -0.01em; line-height: 1; color: #e8e2d9; margin-bottom: 20px;
+    }
+    .chapter-meta {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px; font-style: italic; color: #9a9189; letter-spacing: 0.08em;
+    }
+    .chapter-divider {
+      width: 1px; height: 80px;
+      background: linear-gradient(to bottom, transparent, #9a9189, transparent);
+      margin: 40px auto 0;
+      animation: chapterPulse 3s ease-in-out infinite;
+    }
+    @keyframes chapterPulse { 0%,100%{opacity:0.3} 50%{opacity:0.9} }
+
+    .scroll-hint {
+      position: absolute; bottom: 48px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      color: #444; font-family: 'Cormorant Garamond', serif;
+      font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase;
+      animation: storyFadeIn 3s ease 2s both;
+    }
+
+    .lines {
+      max-width: 600px; margin: 0 auto; padding: 80px 0;
+      text-align: center; opacity: 0; transform: translateY(30px);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+    .lines.visible { opacity: 1; transform: translateY(0); }
+    .lines p { margin-bottom: 1.5em; color: #e8e2d9; }
+    .lines p:last-child { margin-bottom: 0; }
+
+    .scene-action {
+      font-family: 'Cormorant Garamond', serif; font-size: 13px;
+      letter-spacing: 0.3em; text-transform: uppercase; color: #9a9189;
+      display: block; text-align: center; padding: 48px 0;
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .scene-action.visible { opacity: 1; transform: translateY(0); }
+
+    .panel {
+      width: 100%; margin: 60px 0; position: relative;
+      opacity: 0; transform: translateY(40px);
+      transition: opacity 1.4s ease, transform 1.4s ease;
+    }
+    .panel.visible { opacity: 1; transform: translateY(0); }
+    .panel-art { width: 100%; display: block; }
+
+    .chapter-break {
+      text-align: center; padding: 120px 0 60px;
+      opacity: 0; transition: opacity 1.2s ease;
+    }
+    .chapter-break.visible { opacity: 1; }
+    .chapter-break-line {
+      width: 1px; height: 60px;
+      background: linear-gradient(to bottom, transparent, #3a3a3a);
+      margin: 0 auto 40px;
+    }
+    .chapter-break-label {
+      font-family: 'Cormorant Garamond', serif; font-size: 11px;
+      letter-spacing: 0.4em; text-transform: uppercase; color: #9a9189;
+    }
+    .chapter-break-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(32px, 6vw, 60px); font-weight: 300;
+      color: #e8e2d9; margin-top: 16px; letter-spacing: -0.01em;
+    }
+
+    .thought { font-style: italic; color: #9a9189; font-size: 20px; }
+    .em-line {
+      display: block; font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-style: italic; color: #c8b89a;
+      text-align: center; padding: 24px 0; letter-spacing: 0.02em;
+    }
+
+    .hallucination {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 20px; color: #ff6666; font-weight: bold;
+      text-align: center; margin: 1em 0;
+    }
+
+    /* clock */
+    .hidden { display: none; }
+    .clock-display { position: relative; display: inline-block; margin-bottom: 30px; }
+    .clock-time {
+      position: absolute; left: 50%; top: 50%;
+      white-space: nowrap; transform-origin: center center;
+    }
+    .clock-time:nth-child(1) { animation: scaleTime1 0.4s ease forwards; }
+    .clock-time:nth-child(2) { animation: scaleTime2 0.4s ease forwards; }
+    .clock-time:nth-child(3) { animation: scaleTime3 0.4s ease forwards; }
+    .clock-time:nth-child(4) { animation: scaleTime4 0.4s ease forwards; }
+    .beep-sound { animation: beepFlash 0.3s ease forwards; }
+    @keyframes scaleTime1 { from{opacity:0;transform:translate(-50%,-50%) scale(1)} to{opacity:1;transform:translate(-50%,-50%) scale(1)} }
+    @keyframes scaleTime2 { from{opacity:0;transform:translate(-50%,-50%) scale(1.15)} to{opacity:1;transform:translate(-50%,-50%) scale(1.15)} }
+    @keyframes scaleTime3 { from{opacity:0;transform:translate(-50%,-50%) scale(1.3)} to{opacity:1;transform:translate(-50%,-50%) scale(1.3)} }
+    @keyframes scaleTime4 { from{opacity:0;transform:translate(-50%,-50%) scale(1.45)} to{opacity:1;transform:translate(-50%,-50%) scale(1.45)} }
+    @keyframes beepFlash { 0%{opacity:0;color:#c8b89a} 50%{color:#c8b89a} 100%{opacity:1;color:#e8e2d9} }
+
+    #pieces {
+      animation: piecesFloat 3s ease-in-out infinite;
+      transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
+      cursor: pointer;
+    }
+    #pieces:hover {
+      transform: scale(1.1);
+      filter: drop-shadow(0 0 8px rgba(255, 240, 180, 0.8));
+    }
+    @keyframes piecesFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+    #scene-photo {
+      background: #0a0a0a;
+      width: 100vw; height: 100vh; overflow: hidden;
+    }
+    #scene-photo::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+      opacity: 0.35; pointer-events: none; z-index: 1000;
+    }
+    #puzzle-area {
+      position: relative; width: 100%; height: 100%;
+    }
+    #frame {
+      position: absolute; right: 150px; top: 50%;
+      transform: translateY(-50%); width: 55vw; max-width: 700px;
+    }
+    #frame-img {
+      width: 100%; height: auto; display: block; pointer-events: none;
+    }
+    .piece {
+      position: absolute; width: 180px;
+      cursor: grab; user-select: none; transition: filter 0.15s;
+    }
+    .piece:hover { filter: brightness(1.2); }
+    .piece.dragging {
+      cursor: grabbing; z-index: 999;
+      filter: brightness(1.3) drop-shadow(0 0 10px rgba(255,255,220,0.3));
+      transition: none;
+    }
+    .piece.snapped {
+      cursor: default; pointer-events: none;
+      transition: left 0.3s cubic-bezier(.22,.68,0,1.3),
+                  top  0.3s cubic-bezier(.22,.68,0,1.3), filter 0.4s;
+      filter: drop-shadow(0 0 8px rgba(255,240,180,0.8))
+              drop-shadow(0 0 20px rgba(255,220,120,0.4));
+      z-index: 5;
+    }
+    .piece.near-target {
+      filter: drop-shadow(0 0 8px rgba(255,255,255,0.8));
+      transition: filter 0.1s ease;
+    }
+    .glow-spot {
+      position: absolute;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,240,180,0.3) 0%, transparent 70%);
+      pointer-events: none;
+      transition: opacity 0.5s;
+    }
+    #scene-cutscene {
+      background: #000;
+      width: 100vw; height: 100vh; overflow: hidden;
+    }
+    #cutscene-video {
+      width: 70%; height: 70%;
+      object-fit: contain; display: block; margin: auto;
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    #scene-main2 {
+      background: #000;
+      width: 100vw; height: 100vh; overflow: hidden;
+    }
+    #puzzleGlow {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60vw; max-width: 412px;
+    }
+
+    #scene-cutscene2 {
+      background: #000;
+      width: 100vw; height: 100vh; overflow: hidden;
+    }
+
+    #cutscene2-video {
+      width: 70%; height: 70%;
+      object-fit: contain; display: block; margin: auto;
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    #scene-story3-video {
+      background: #000;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    #story3-video {
+      width: 70%;
+      height: 70%;
+      object-fit: contain;
+      display: block;
+      margin: auto;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    #scene-waking-up {
+      background: #000;
+      width: 100vw; height: 100vh; overflow: hidden;
+    }
+    #waking-up-video {
+      width: 70%; height: 70%;
+      object-fit: contain; display: block; margin: auto;
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    #scene-running-scene {
+      background: #000;
+      width: 100vw; height: 100vh; overflow: hidden;
+    }
+    #running-scene-video {
+      width: 70%; height: 70%;
+      object-fit: contain; display: block; margin: auto;
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    #scene-morse {
+      background: #060808;
+      font-family: 'Share Tech Mono', monospace;
+      color: #5aafaf;
+      overflow: hidden;
+    }
+    #morse-bg-video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; opacity: 1; z-index: 0; pointer-events: none;
+    }
+    #morse-scanlines {
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        0deg, transparent 0px, transparent 3px,
+        rgba(0,0,0,0.13) 3px, rgba(0,0,0,0.13) 4px
+      );
+      z-index: 1; pointer-events: none;
+    }
+    #morse-ui {
+      position: absolute; inset: 0; z-index: 2;
+      opacity: 0; transition: opacity 1s;
+    }
+    #tape-wrap {
+      width: 100%; max-width: 640px;
+      background-image: url('assets/images/bar.png');
+      background-size: cover; background-position: center;
+      border-radius: 4px; padding: 18px 22px; min-height: 72px;
+      display: flex; align-items: center;
+      position: absolute; top: 50px; left: 50%; transform: translateX(-50%);
+      overflow: hidden; backdrop-filter: blur(10px);
+    }
+    #tape {
+      font-size: 26px; letter-spacing: 5px; color: #cccccc;
+      word-break: break-all; line-height: 1.5; flex: 1;
+      min-height: 34px; transition: color 0.25s;
+    }
+    #tape.wrong { color: #6a2020; }
+    #tape.ok    { color: #1a6a3a; }
+    #morse-cursor {
+      display: inline-block; width: 2px; height: 26px;
+      background: white; margin-left: 3px;
+      vertical-align: middle; animation: morseBlink 1s step-end infinite;
+    }
+    @keyframes morseBlink { 0%,100%{opacity:1} 50%{opacity:0} }
+    #morse-buttons {
+      display: flex; gap: 40px; align-items: flex-end;
+      position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
+    }
+    .morse-btn {
+      background: none; border: none; cursor: pointer; outline: none;
+      padding: 0; -webkit-tap-highlight-color: transparent;
+    }
+    .morse-btn img {
+      display: block; width: auto; height: auto;
+      max-width: 96px; max-height: 96px;
+      pointer-events: none; transition: transform 0.15s ease;
+    }
+    .morse-btn:hover img { transform: scale(1.1); }
+    #morse-restart-btn, #morse-mute-btn {
+      background: none; border: none; padding: 0;
+      cursor: pointer; outline: none; position: absolute;
+    }
+    #morse-restart-btn { top: 20px; right: 20px; }
+    #morse-mute-btn    { top: 20px; left: 20px; }
+    #morse-restart-btn img, #morse-mute-btn img {
+      display: block; max-width: 50px; max-height: 50px;
+      pointer-events: none; transition: transform 0.15s ease;
+    }
+    #morse-restart-btn:hover img, #morse-mute-btn:hover img { transform: scale(1.1); }
+
+
+    #transition-overlay {
+      position: fixed; inset: 0;
+      background: #000; opacity: 0; z-index: 99999;
+      pointer-events: none;
+      transition: opacity 0.8s ease;
+    }
+    #transition-overlay.fading-in  { opacity: 1; pointer-events: all; }
+    #transition-overlay.fading-out { opacity: 0; }
+
+    #scene-phone-puzzle {
+      font-family: 'Courier New', Courier, monospace;
+      background: #040404;
+      color: #ddd;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .phone-layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 1fr) 360px;
+      min-height: 100vh;
+    }
+
+    .phone-left-panel {
+      position: relative;
+      background: url('assets/images/phonePuzzle/puzzle1_background.png') center/95% no-repeat;
+      border-right: 2px solid rgba(255, 255, 255, 0.12);
+      overflow: hidden;
+    }
+
+    .phone-right-panel {
+      display: grid;
+      place-items: center;
+      background: #080808;
+    }
+
+    .phone-container {
+      width: min(360px, 90vw);
+      background: #101010;
+      padding: 24px;
+      border: 2px solid #eee;
+      border-radius: 10px;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.08);
+      text-align: center;
+      filter: contrast(0.8);
+    }
+
+    .phone-container h1 {
+      margin-bottom: 8px;
+      font-size: 1.8rem;
+      text-shadow: 0 0 6px #fff;
+      letter-spacing: 0.05em;
+    }
+
+    .phone-container p {
+      margin-bottom: 18px;
+      color: #ccc;
+      font-size: 0.95rem;
+    }
+
+    .phone-display {
+      background: #020202;
+      color: #eee;
+      border: 2px dashed #fff;
+      padding: 14px;
+      border-radius: 8px;
+      letter-spacing: 0.4em;
+      font-size: 1.7rem;
+      margin-bottom: 16px;
+      min-height: 56px;
+      box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.1);
+    }
+
+    .phone-drag-overlay {
+      position: absolute;
+      width: 600px;
+      height: 575px;
+      top: 10px;
+      left: 10px;
+      background: url('assets/images/phonePuzzle/puzzle1drag.png') center/contain no-repeat;
+      cursor: grab;
+      user-select: none;
+      z-index: 10;
+    }
+
+    .phone-drag-overlay.dragging {
+      cursor: grabbing;
+      transform: scale(1.02);
+    }
+
+    .phone-keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .phone-keypad button {
+      width: 60px;
+      height: 60px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      box-shadow: none;
+    }
+
+    .phone-keypad button:before {
+      display: none;
+    }
+
+    .phone-keypad button img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .phone-btn {
+      border: 2px solid #bbb;
+      border-radius: 6px;
+      background: #0b0b0b;
+      color: #eee;
+      font-size: 1.2rem;
+      font-family: inherit;
+      padding: 14px 12px;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+      transition: transform 0.12s ease, background 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+      text-shadow: 0 0 2px #fff;
+    }
+
+    .phone-btn:before {
+      content: '';
+      position: absolute;
+      left: 6px;
+      top: 6px;
+      right: 6px;
+      bottom: 6px;
+      border: 1px dashed rgba(255, 255, 255, 0.2);
+      pointer-events: none;
+    }
+
+    .phone-keypad .phone-btn:hover {
+      transform: none;
+      background: #0b0b0b;
+      box-shadow: none;
+    }
+
+    .phone-keypad .phone-btn:active {
+      transform: none;
+      background: #0b0b0b;
+    }
+
+    .phone-num-btn {
+      font-weight: 700;
+    }
+
+    .phone-action-btn {
+      background: #1f1f1f;
+      border-color: #fff;
+      font-weight: 700;
+    }
+
+    .phone-message {
+      margin-top: 16px;
+      font-weight: 700;
+      min-height: 1.4em;
+      font-size: 1rem;
+      letter-spacing: 0.02em;
+    }
+
+    .phone-message.success {
+      color: #b9f7a6;
+    }
+
+    .phone-message.error {
+      color: #f08a8a;
+    }
+  </style>
+</head>
+<body>
+/*START OF STORY CHAPTER 1*/
+
+<audio id="audio-ambience"           src="assets/audio/landing-ambience.mp3" loop preload="auto"></audio>
+<audio id="audio-story-ambience"     src="assets/audio/story-ambience.mp3" loop preload="auto"></audio>
+<audio id="audio-btn"                src="assets/audio/landing-button.mp3"   preload="auto"></audio>
+<audio id="audio-final-sting"        src="assets/LINES_[cut_132sec].mp3"     preload="auto"></audio>
+
+<div id="transition-overlay"></div>
+
+<div id="scene-landing" class="scene">
+  <div id="landing-fade"></div>
+  <video id="landing-video" autoplay muted loop playsinline>
+    <source src="assets/videos/logo-background.mp4" type="video/mp4">
+  </video>
+  <button id="landing-btn">Click to start</button>
+</div>
+
+<div id="scene-story" class="scene">
+  <div class="video-bg">
+    <video src="assets/videos/act1.mp4" autoplay muted playsinline loop></video>
+  </div>
+
+  <div class="story">
+    <div class="chapter-header">
+      <div class="chapter-label">Chapter One</div>
+      <h1 class="chapter-title">Bennett</h1>
+      <div class="chapter-meta">8:00 am — 120 Lars Street</div>
+      <div class="chapter-divider"></div>
+      <div class="scroll-hint">scroll</div>
+    </div>
+
+    <div class="panel">
+      <img src="assets/chapter1/phone.png" alt="phone" class="panel-art">
+    </div>
+
+    <div class="lines">
+      <p><span class="thought">You stare at your ceiling wide awake, way before your alarm was about to ring.<br id="clock-start">
+        <span class="clock-display">
+          <span class="clock-time hidden">8:05</span>
+          <span class="clock-time hidden">8:10</span>
+          <span class="clock-time hidden">8:15</span>
+          <span class="clock-time hidden">8:20</span>
+        </span><br>
+        <span class="beep-sound hidden">BEEP</span><br>
+        <span class="beep-sound hidden">BEEP</span><br>
+        <span class="beep-sound hidden">BEEP</span>
+      </span></p>
+      <p><span class="thought">Your morning routine is redundant but simple.</span></p>
+      <img src="assets/chapter1/morning_routine.png" alt="Routine list" class="panel-art">
+      <img src="assets/chapter1/hygiene.png" alt="bathroom-setting" class="panel-art">
+      <img src="assets/chapter1/food.png" alt="food" class="panel-art">
+    </div>
+
+    <div class="panel">
+      <img src="assets/chapter1/dress_up.png" alt="Morning routine" class="panel-art">
+    </div>
+
+    <div class="lines">
+      <p>Morning goes per usual. Same routine, same breakfast, same everything.</p>
+      <p>My class starts at 9:30, so I need to rush.</p>
+      <p><span class="thought">I should get the mail before I forget.</span></p>
+    </div>
+
+      <div class="panel">
+      <img src="assets/chapter1/mailbox_closed.png" alt="Checking the mailbox" class="panel-art">
+    </div>
+
+    <div class="panel">
+      <img src="assets/chapter1/mailbox_open.png" alt="Mailbox open" class="panel-art">
+    </div>
+
+    <div class="lines">
+      <p>Bills, flyers, the usual...but there's an envelope I've never seen before.</p>
+      <p><span class="thought">It's from the hospital — for dad. He never gets stuff like this by mail. It isn't even sealed.</span></p>
+      <p>I should take this inside.</p>
+      <p><span class="thought"> A little peek won't hurt. Right?</span></p>
+      <p>Dad's gone to work. My brother's in the living room. I have maybe four minutes before I should leave.</p>
+      <p><span class="thought">I'm really curious. I open it.</span></p>
+    </div>
+
+    <span class="scene-action">— Opens Mail —</span>
+
+
+    <div class="panel">
+      <img src="assets/chapter1/opening_letter.png" alt="Opening the letter" class="panel-art">
+    </div>
+
+    <div class="panel">
+      <img src="assets/chapter1/letter_ominious.png" alt="folder letter" class="panel-art">
+    </div>
+
+    <div class="lines">
+      <p>It's a patient file. Clinical, formatted, dense. The kind of thing clearly not meant for me.</p>
+      <p>I almost put it back.</p>
+      <em class="em-line">Then a line stops me.</em>
+    </div>
+
+    <div class="panel">
+      <img src="assets/chapter1/clinical_document.png" alt="Clinical document" class="panel-art">
+    </div>
+
+    <div class="lines">
+      <p>I read it again.</p>
+      <p>Last name: <em>Bennett.</em></p>
+      <p>I read it a third time.</p>
+      <p>Date of birth: <em>14/03/2002.</em></p>
+      <p>The first name is one I don't recognize. But everything else.</p>
+      <p>I set it down. Pick it up again.</p>
+      <em class="em-line">This person has my last name. My exact birthday. And it's issued to dad.</em>
+      <p><span class="thought">Who is this?</span></p>
+    </div>
+
+    <div class="chapter-break">
+      <div class="chapter-break-line"></div>
+      <div class="chapter-break-label">Chapter Two</div>
+      <div class="chapter-break-title">Coincidence</div>
+    </div>
+
+    <div class="panel">
+      <img src="assets/chapter2/reading_document.png" alt="Reading the document again" class="panel-art">
+    </div>
+
+    <div class="lines">
+      <p>I stare at myself and try to think straight.</p>
+      <p><span class="thought">It's just a coincidence.</span></p>
+      <p>Same last name — it's not that rare. Same birthday — one in 365, that's not impossible.</p>
+      <p>But the same last name <em>and</em> the same birthday.</p>
+      <p>At a hospital called Clearview. In a letter sent to my dad, who has worked there for years and has never once mentioned a patient. Never the type to talk.</p>
+    </div>
+
+    <div class="panel">
+      <img src="assets/chapter2/about_to_call_dad.png" alt="About to call dad" class="panel-art">
+    </div>
+
+    <div class="lines">
+      <p>I was about to call my dad.</p>
+      <p>Until I turn the letter over.</p>
+    </div>
+
+    <div class="panel">
+      <img src="assets/chapter2/confidential_document.png" alt="Confidential stamp on document" class="panel-art">
+    </div>
+
+    <div class="lines">
+      <em class="em-line">Shit.</em>
+      <p>I wasn't supposed to see this.</p>
+    </div>
+
+    <div class="panel">
+      <img src="assets/chapter2/why_secret.png" alt="Sitting alone with the letter" class="panel-art">
+    </div>
+    <div class="lines">
+      <em class="em-line">What's dad hiding?</em>
+    </div>
+
+    <div class="chapter-break">
+      <div class="chapter-break-line"></div>
+      <div class="chapter-break-label">Chapter Three</div>
+      <div class="chapter-break-title">What if?</div>
+    </div>
+
+    <span class="scene-action">— Bathroom —</span>
+
+    <div class="panel">
+      <img src="assets/chapter3/staring_at_mirror.png" alt="Staring at mirror" class="panel-art">
+    </div>
+
+    <div class="lines">
+      <p>The tap turns on. Cold water runs endlessly.</p>
+      <p>I stare at my reflection.</p>
+      <p><span class="thought">I don't feel like fixing anything.</span></p>
+      <p>It's a coincidence. It has to be.</p>
+      <p>Same last name. Same birthday. Sent to my dad.</p>
+      <em class="em-line">What kind of coincidence looks like that?</em>
+      <p><span class="thought">Could it be that I have a twin?<br>A brother I never knew about?<br>Was there someone else who was hidden from me my whole life?</span></p>
+      <p><span class="thought">Why would they hide that?</span></p>
+    </div>
+
+    <div class="lines">
+      <p>I can't ask him. I wasn't supposed to see it. He'll know I went through his mail.</p>
+      <p>I can't ask anyone.</p>
+      <em class="em-line">I need to find out on my own.</em>
+    </div>
+
+    <div class="chapter-break">
+      <div class="chapter-break-line"></div>
+      <div class="chapter-break-label">Chapter Four</div>
+      <div class="chapter-break-title">Family Photo</div>
+    </div>
+
+    <span class="scene-action">— Office Hallway —</span>
+
+    <div class="lines">
+      <p>Dad's office has always been off-limits.</p>
+      <p>Not because he said so. He never had to.</p>
+      <p>It was just understood.</p>
+    </div>
+
+    <div class="panel">
+      <img src="assets/chapter4/sneaking_in_office.png" alt="Sneaking into the office" class="panel-art">
+    </div>
+
+    <div class="lines">
+      <p>The door is closed. It's always closed.</p>
+    </div>
+
+    <span class="scene-action">— Office —</span>
+
+    <div class="lines">
+      <p>The air smells like old paper. And something else.</p>
+      <p>Books. Files. Folders. Everything is perfectly in place.</p>
+      <p><span class="thought">He'd know if I touched anything.</span></p>
+      <p>I touch everything anyway.</p>
+    </div>
+
+    <div class="panel">
+      <img src="assets/chapter4/looking_in_drawer.png" alt="Looking through drawers" class="panel-art">
+    </div>
+
+    <div class="lines">
+      <p>Drawers open.</p>
+      <p>Pens. Receipts. An old watch I've never seen him wear.</p>
+      <p>I almost close the second drawer—</p>
+      <em class="em-line">—but something catches my eye.</em>
+    </div>
+
+    <span class="scene-action">— Opens the Second Drawer —</span>
+
+    <div class="lines">
+      <p>Something's at the back.</p>
+      <p>Torn. In pieces.</p>
+      <p>I pull them out. Lay them on the desk.</p>
+      <p><span class="thought">It's a photo. Or it was.</span></p>
+    </div>
+
+    <div class="lines">
+      <p>The pieces scatter across the desk.</p>
+      <div class="panel">
+        <img id="pieces" src="assets/chapter4/scattered-pieces.png" alt="Scattered photo pieces" class="panel-art">
+      </div>
+      <em class="em-line">Something is hidden here.</em>
+      <p><span class="thought">Click the scattered pieces to reform the ripped photo.</span></p>
+    </div>
+  </div>
+</div>
+
+<div id="scene-photo" class="scene">
+  <div id="puzzle-area">
+    <div id="frame">
+      <img id="frame-img" src="assets/puzzle/background.png" draggable="false">
+    </div>
+    <img class="piece" id="p1" src="assets/puzzle/piece1.png" draggable="false" data-target-x="0.743" data-target-y="0.243">
+    <img class="piece" id="p2" src="assets/puzzle/piece2.png" draggable="false" data-target-x="0.729" data-target-y="0.589">
+    <img class="piece" id="p3" src="assets/puzzle/piece3.png" draggable="false" data-target-x="0.546" data-target-y="-0.009">
+    <img class="piece" id="p4" src="assets/puzzle/piece4.png" draggable="false" data-target-x="0.767" data-target-y="-0.061">
+    <img class="piece" id="p5" src="assets/puzzle/piece5.png" draggable="false" data-target-x="0.474" data-target-y="0.312">
+    <img class="piece" id="p6" src="assets/puzzle/piece6.png" draggable="false" data-target-x="0.385" data-target-y="0.693">
+    <img class="piece" id="p7" src="assets/puzzle/piece7.png" draggable="false" data-target-x="0.632" data-target-y="0.694">
+  </div>
+</div>
+
+<div id="scene-cutscene" class="scene">
+  <video id="cutscene-video" playsinline>
+    <source src="assets/videos/photoObtained.mp4" type="video/mp4">
+  </video>
+</div>
+
+<div id="scene-main2" class="scene">
+  <img id="puzzleGlow" src="assets/puzzle/puzzleGlow.png" alt="">
+</div>
+
+<div id="scene-story2" class="scene">
+  <div class="story">
+        <div class="panel">
+      <img src="assets/fullIllustration14.png" alt="" class="panel-art">
+    </div>
+
+    <span class="scene-action">— Office —</span>
+
+    <div class="lines">
+      <p>I can't believe I almost missed this.</p>
+      <p>Part of it is still missing.</p>
+      <p>I check the drawer again.</p>
+      <p>Then the room.</p>
+      <p>Nothing.</p>
+      <p>I've already gone through everything.</p>
+      <p>I pause.</p>
+      <p>Thinking.</p>
+      <p>Then—</p>
+      <div class="panel">
+        <img src="assets/chapter5/finding_out.png" alt="" class="panel-art">
+      </div>
+      <p>It clicks.</p>
+      <p>He wouldn't keep everything here.</p>
+      <p>Most of his work is at the hospital.</p>
+      <p>If there's anything else connected to this…</p>
+      <p>It would be there.</p>
+    </div>
+
+    <span class="scene-action">— Office Hallway —</span>
+    <div class="panel">
+      <img src="assets/chapter4/sneaking_in_office.png" alt="sneaking-out" class="panel-art">
+    </div>
+
+    <div class="lines">
+      <p>It's risky.</p>
+      <p>This could end badly in so many ways.</p>
+      <p>But still.</p>
+      <p>The hospital isn't too far from home.</p>
+      <p>And if I don't do this, it'll haunt me forever...</p>
+      <p>I have to. I'm already in too deep.</p>
+      <p>Alright, I can do this.</p>
+      <p>Tonight.</p>
+    </div>
+
+    <span class="scene-action">— Bedroom —</span>
+
+    <div class="lines">
+      <p>There's so much to think about, and not enough time to process it all</p>
+      <p>Why does dad's office have to be tucked away in the back?</p>
+      <p>Why does it have to be at the hospital?</p>
+      <p>Whatever...</p>
+      <p>I just need to focus on other obstacles.</p>
+      <p><span class="thought">Dad's office is near the back of the hospital.</span></p>
+      <p><span class="thought">Wouldn't be an issue if the hospital was empty.</span></p>
+      <p><span class="thought">But nurses are always wandering around.</span></p>
+      <p><span class="thought">The main focus is not getting caught</span></p>
+      <p><span class="thought">I need to go when its quiet</span></p>
+      <p>After midnight?</p>
+      <p>Dad would be home from work.</p>
+      <p>Everyone would be sound asleep.</p>
+      <p>And the hospital shouldn't be hectic at that time.</p>
+      <p><span class="thought">It's perfect.</span></p>
+    </div>
+
+    <span class="scene-action" id="continue-story2">— Continue —</span>
+  </div>
+</div>
+
+<div id="scene-story3" class="scene">
+  <div class="story">
+    <span class="scene-action">— House —</span>
+
+    <div class="lines">
+      <p>It's 1 am. Everyone's asleep.</p>
+      <p>I have about five hours before my dad wakes up.</p>
+      <p>That's enough. I should be able to run to the hospital since it's roughly a 15-minute sprint from here.</p>
+      <p>I move quietly through the house, keeping the lights off.</p>
+      <div class="panel">
+        <img src="assets/chapter6/leaving_hall.png" alt="" class="panel-art">
+      </div>
+      <p>The front door clicks louder than I expect when I open it. I stop for a second to listen.</p>
+      <p>Nothing.</p>
+      <p>I step outside and close it behind me.</p>
+      <div class="panel">
+        <img src="assets/chapter6/leaving_house.png" alt="" class="panel-art">
+      </div>
+    </div>
+
+    <span class="scene-action">— Outside House —</span>
+
+    <div class="lines">
+      <p>Okay.. Phew.. I'm out.</p>
+    </div>
+
+    <span class="scene-action">— Clearview Hospital —</span>
+
+    <div class="lines">
+      <p>You reach the front entrance of the building and slow down.</p>
+      <p>The lights inside are still on, but there's no one near the doors.</p>
+      <p>Should I go in? Maybe not.</p>
+      <div class="panel">
+        <img src="assets/chapter6/pacing_parkinglot.png" alt="" class="panel-art">
+      </div>
+      <p>You circle the building instead, sticking close to the wall until I'm out of sight from the front.</p>
+      <p>There's a side entrance near the back. No sign, no reason for anyone to use it unless they already know it's there</p>
+      <p>I try the handle</p>
+      <p>It doesn't open.</p>
+      <p>The building looms as I stare at the sign.</p>
+      <div class="panel">
+        <img src="assets/chapter5/clearview_hospital.png" alt="" class="panel-art">
+      </div>
+      <p>Clearview Hospital</p>
+      <p>This is it.</p>
+      <p>He approaches the hospital slowly.</p>
+    </div>
+    <span class="scene-action">— Entering Hospital —</span>
+    <span class="scene-action" id="continue-story3">— Continue —</span>
+  </div>
+</div>
+
+<div id="scene-story3-video" class="scene">
+  <video id="story3-video" playsinline preload="auto">
+    <source src="assets/videos/hospital.mp4" type="video/mp4">
+  </video>
+</div>
+
+<div id="scene-75" class="scene">
+  <div class="story">
+    <div class="lines">
+      <p>Dim lighting.</p>
+      <p>Empty hallways.</p>
+      <p>Footsteps echo.</p>
+      <p>It’s cold…quiet..almost empty.</p>
+      <p><span class="thought">I’ll have to tread carefully and stay close to the walls to avoid the security cameras.</span></p>
+      <p>Why does this place feel so… familiar?</p>
+      <em class="em-line">FOCUS! YOU NEED TO FOCUS!</em>
+      <p><span class="thought">He keeps moving forward carefully.</span></p>
+      <div class="panel">
+        <img src="assets/chapter6/sneaking_hospital.png" alt="" class="panel-art">
+      </div>
+      <p>Oh crap.</p>
+      <p>She’s too close.</p>
+      <p>I need to hide NOW.</p>
+    </div>
+    <span class="scene-action" id="continue-story75">— Continue —</span>
+  </div>
+</div>
+
+<div id="scene-timed" class="scene">
+  <div id="game"></div>
+</div>
+
+<div id="scene-story4" class="scene">
+  <div class="story">
+    <span class="scene-action">— Hospital Office —</span>
+
+    <div class="lines">
+      <p>The air feels different here.</p>
+      <p>It’s Colder.</p>
+      <p>Heavier.</p>
+      <p>It’s almost suffocating.</p>
+      <p>Maybe it’s just me.</p>
+      <p>The shelves are stacked with files and books.</p>
+      <p>I wonder...</p>
+      <span class="scene-action">— You hear people walking and chattering in the distance. —</span>
+      <p>Time is running out.</p>
+      <p>I need to find something.</p>
+      <p>Anything.</p>
+      <p>...Dad’s desk.</p>
+      <p>Maybe that’ll give me something.</p>
+      <p>What’s this?</p>
+      <p>Patient 14?</p>
+      <div class="panel">
+        <img src="assets/document.png" alt="" class="panel-art">
+      </div>
+    </div>
+
+    <span class="scene-action">— Opens and reads file —</span>
+
+    <div class="lines">
+      <p>I don’t understand...</p>
+      <p>This patient,</p>
+      <p>He’s an awful lot like me.</p>
+      <p>Poor us.</p>
+      <p>This isn’t a coincidence anymore.</p>
+      <p>It’s something deeper.</p>
+      <p>And why do some of the words look like that?</p>
+      <p>Is it a clue?</p>
+      <p>No, I'm probably just tired.</p>
+      <p>My eyes are getting blurry.</p>
+    </div>
+
+    <span class="scene-action">— Hears the people walking and chattering in the distance getting louder. —</span>
+
+    <div class="lines">
+      <p>Damn it, I’m moving too slow.</p>
+      <p>Let me just skim through this.</p>
+      <p>There has to be more that I'm missing.</p>
+      <p>I have to keep looking.</p>
+      <p>Flips through the file</p>
+      <p>There’s a note here.</p>
+      <em class="em-line">Reading</em>
+      <p>What?</p>
+      <p>Memory loss, Psychosis hallucinations, Erased family history?</p>
+      <p>Who is this guy?</p>
+      <p>Why are we so much alike?</p>
+      <p>It’s almost like we’re</p>
+      <p>...twins.</p>
+      <p>Wait, does this connect with the photo?</p>
+      <p>No, it’s unlikely.</p>
+      <p>Surely not..</p>
+      <p>...right?</p>
+      <p>I gotta get out of here</p>
+    </div>
+
+    <span class="scene-action" id="continue-story4">— Continue —</span>
+  </div>
+</div>
+
+<div id="scene-story5" class="scene">
+  <div class="story">
+    <span class="scene-action">— Back Home —</span>
+
+    <div class="lines">
+      <p>Its 2 am</p>
+      <p>I still have sometime before dad wakes up</p>
+      <p>I gotta hurry</p>
+      <p>Gotta be careful not to wake anyone up</p>
+      <p>I need water</p>
+      <p>I need to think</p>
+      <p>No—</p>
+      <p>I need to calm down first.</p>
+      <p><span class="thought">Brother.</span></p>
+      <p>No.</p>
+      <p>Don't.</p>
+      <p>Not yet.</p>
+      <p>Just keep moving.</p>
+    </div>
+
+    <span class="scene-action">— Bathroom —</span>
+    <img src="assets/chapter3/staring_at_mirror.png" alt="" class="panel-art">
+
+    <div class="lines">
+      <em class="em-line">You slip inside and quietly shut the door</em>
+      <p>The air feels heavy in here.</p>
+      <p>Too heavy.</p>
+      <p>Like the room's been waiting for me.</p>
+      <p>It's warmer than the hallway.</p>
+      <p>Warmer than the rest of the house.</p>
+      <p>But somehow it feels worse.</p>
+      <p>Harder to breathe.</p>
+      <p>Water rushes out.</p>
+      <p>It's Sharp.</p>
+      <p>Loud.</p>
+      <p>I cup some in my hands and drink.</p>
+      <p>It doesn't help.</p>
+      <p>The mirror starts to cloud over.</p>
+      <p>Fog pressed across the glass like a second skin.</p>
+      <p>I don't remember it being this foggy.</p>
+      <p>Did I leave the water running hot?</p>
+      <p>No.</p>
+      <p>I barely even touched it.</p>
+      <p>Then why—</p>
+      <p>Steps closer to the mirror</p>
+      <p>Something's forming.</p>
+      <p>No.</p>
+      <p>That's impossible.</p>
+      <p>It's just condensation.</p>
+      <p>Just my imagination.</p>
+      <p>Just stress.</p>
+      <p>The fog shifts.</p>
+      <p>Slowly.</p>
+      <p>Unevenly.</p>
+      <p>Like invisible fingers dragging through the mist.</p>
+      <p>Words begin to take shape.</p>
+      <p>I freeze.</p>
+      <p>Three words.</p>
+      <p>Or almost words.</p>
+      <p>Broken.</p>
+      <p>Incomplete.</p>
+      <p>Hard to read.</p>
+      <p>Just enough to make my stomach drop.</p>
+      <p>What is that?</p>
+      <p>I step closer.</p>
+      <p>The letters look wrong.</p>
+      <p>Like they don't belong with the others.</p>
+      <p>Like they're trying to be noticed.</p>
+      <p>My reflection stares back at me,</p>
+      <p>blurred behind the steam.</p>
+      <p>I can barely recognize my own face.</p>
+      <p><span class="thought">This isn't real.</span></p>
+      <p><span class="thought">...is it?</span></p>
+      <p>The mirror trembles.</p>
+      <p>Or maybe my vision does.</p>
+    </div>
+
+    <span class="scene-action">— Slowly raises a hand toward the glass —</span>
+
+    <div class="lines">
+      <p>My fingers hover over the first glowing letter.</p>
+      <p>I don't know why I'm doing this.</p>
+      <p>I just know I have to.</p>
+    </div>
+
+    <span class="scene-action" id="continue-story5">— Continue —</span>
+  </div>
+</div>
+
+
+<div id="scene-cutscene2" class="scene">
+  <video id="cutscene2-video" playsinline>
+    <source src="assets/videos/room.mp4" type="video/mp4">
+  </video>
+</div>
+
+
+<div id="scene-morse" class="scene">
+  <video id="morse-bg-video" autoplay muted playsinline loop>
+    <source src="assets/videos/morse1.mp4" type="video/mp4">
+  </video>
+  <div id="morse-scanlines"></div>
+  <div id="morse-ui">
+    <div id="tape-wrap">
+      <div id="tape"><span id="morse-cursor"></span></div>
+    </div>
+    <div id="morse-buttons">
+      <div class="btn-wrap">
+        <button class="morse-btn" id="btn-dot"
+          data-default="assets/morse/dot1.png"
+          data-hover="assets/morse/dot2.png"
+          data-press="assets/morse/dot3.png"
+          aria-label="dot">
+          <img src="assets/morse/dot1.png" alt="dot"/>
+        </button>
+      </div>
+      <div class="btn-wrap">
+        <button class="morse-btn" id="btn-dash"
+          data-default="assets/morse/dash1.png"
+          data-hover="assets/morse/dash2.png"
+          data-press="assets/morse/dash3.png"
+          aria-label="dash">
+          <img src="assets/morse/dash1.png" alt="dash"/>
+        </button>
+      </div>
+    </div>
+    <button id="morse-restart-btn" aria-label="restart">
+      <img src="assets/morse/restart.png" alt="restart"/>
+    </button>
+    <button id="morse-mute-btn" aria-label="toggle mute">
+      <img src="assets/morse/volume-off.png" alt="volume"/>
+    </button>
+  </div>
+</div>
+
+
+<div id="scene-story6" class="scene">
+  <div class="story">
+    <span class="scene-action">—OFFICE HALLWAY—</span>
+
+    <div class="lines">
+      <p>I've been through these halls all my life.</p>
+      <p>But now,</p>
+      <p>It's like I've never been here before.</p>
+      <p>It doesn't feel safe here.</p>
+      <p>This doesn't feel like home anymore.</p>
+      <p>Stupid curiosity,</p>
+      <p>I missed the person I was before.</p>
+      <p>But I have to pull through.</p>
+      <p>I need some sort of closure.</p>
+    </div>
+
+    <span class="scene-action">—OFFICE—</span>
+
+    <div class="lines">
+      <p>All the signs lead me to the same place that started it all.</p>
+      <p>Except now I know what I'm looking for.</p>
+      <p>And there it is.</p>
+      <p>Right, the code.</p>
+      <p>Please,</p>
+      <p>Nothing is making sense to me.</p>
+      <p>At this point, just give me something.</p>
+      <p>Something I can wrap my head around.</p>
+      <p>Something this big wouldn't be hidden from me.</p>
+      <p>Especially from my own dad.</p>
+      <p>Right?...</p>
+      <p>What?...</p>
+      <p class="hallucination">You shouldn’t have done that</p>
+      <p>This isn’t real...</p>
+      <p class="hallucination">You’re not alone anymore</p>
+      <p>Shut up.</p>
+      <p class="hallucination">You’re not alone anymore</p>
+      <p>SHUT UP</p>
+    </div>
+
+    <span class="scene-action" id="continue-story6">— Continue —</span>
+  </div>
+</div>
+
+
+<div id="scene-ending" class="scene">
+  <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #000;">
+    <button id="ending-btn1" style="background: none; border: none;">
+      <img src="assets/images/placeholder.png" alt="Choice 1" style="max-width: 200px;">
+    </button>
+    <div id="ending-counter" style="position: absolute; top: 50px; left: 50%; transform: translateX(-50%); color: white; font-size: 24px; font-family: 'Courier New', monospace;">0/1</div>
+  </div>
+</div>
+
+
+<div id="scene-phone-puzzle" class="scene">
+  <div class="phone-layout">
+    <section id="phone-leftPanel" class="phone-left-panel">
+      <div id="phone-dragOverlay" class="phone-drag-overlay" draggable="false" role="button" aria-label="Draggable overlay"></div>
+    </section>
+
+    <section class="phone-right-panel">
+      <main class="phone-container">
+        <h1>Safe Box</h1>
+        <p>Enter passcode</p>
+
+        <div id="phone-display" class="phone-display">----</div>
+
+        <div id="phone-keypad" class="phone-keypad" aria-label="Numeric keypad">
+          <button class="phone-btn phone-num-btn" data-num="1"><img src="assets/images/phonePuzzle/1.png" alt="1"></button>
+          <button class="phone-btn phone-num-btn" data-num="2"><img src="assets/images/phonePuzzle/2.png" alt="2"></button>
+          <button class="phone-btn phone-num-btn" data-num="3"><img src="assets/images/phonePuzzle/3.png" alt="3"></button>
+          <button class="phone-btn phone-num-btn" data-num="4"><img src="assets/images/phonePuzzle/4.png" alt="4"></button>
+          <button class="phone-btn phone-num-btn" data-num="5"><img src="assets/images/phonePuzzle/5.png" alt="5"></button>
+          <button class="phone-btn phone-num-btn" data-num="6"><img src="assets/images/phonePuzzle/6.png" alt="6"></button>
+          <button class="phone-btn phone-num-btn" data-num="7"><img src="assets/images/phonePuzzle/7.png" alt="7"></button>
+          <button class="phone-btn phone-num-btn" data-num="8"><img src="assets/images/phonePuzzle/8.png" alt="8"></button>
+          <button class="phone-btn phone-num-btn" data-num="9"><img src="assets/images/phonePuzzle/9.png" alt="9"></button>
+          <button class="phone-btn phone-num-btn" data-num="0"><img src="assets/images/phonePuzzle/0.png" alt="0"></button>
+          <button class="phone-btn phone-action-btn" id="phone-clearBtn"><img src="assets/images/phonePuzzle/reset.png" alt="Clear"></button>
+          
+          <button class="phone-btn phone-action-btn" id="phone-submitBtn"><img src="assets/images/phonePuzzle/confirm.png" alt="Enter"></button>
+        </div>
+
+        <div id="phone-message" class="phone-message"></div>
+      </main>
+    </section>
+  </div>
+</div>
+
+
+<div id="scene-waking-up" class="scene">
+  <video id="waking-up-video" playsinline>
+    <source src="assets/videos/waking_up.mp4" type="video/mp4">
+  </video>
+</div>
+
+
+<div id="scene-running-scene" class="scene">
+  <video id="running-scene-video" playsinline>
+    <source src="assets/videos/running7.mp4" type="video/mp4">
+  </video>
+</div>
+<div id="scene-final-text" class="scene">
+  <div class="story">
+    <div class="lines">
+      <p>Thank you for partaking in this journey...Patient 14. We throughly hope you enjoed your experience, and we hope you were throughly scared.</p>
+      <p>If you'd like to go back to the beginning refresh the page. Otherwise stick around for a last litle surprise.</p>
+    </div>
+  </div>
+</div>
+
+
+<script>
+'use strict';
+
+const overlay = document.getElementById('transition-overlay');
+let currentScene = null;
+
+function goTo(id, delay = 0) {
+  setTimeout(() => {
+    overlay.classList.add('fading-in');
+    overlay.classList.remove('fading-out');
+
+    setTimeout(() => {
+      if (currentScene) {
+        currentScene.classList.remove('active');
+        currentScene.querySelectorAll('video').forEach(v => {
+          if (!v.loop) return;
+        });
+        if (currentScene.id === 'scene-story') {
+          const storyAmbienceEl = document.getElementById('audio-story-ambience');
+          storyAmbienceEl.pause();
+        }
+      }
+
+
+      const next = document.getElementById(id);
+      currentScene = next;
+      next.classList.add('active');
+
+      sceneInit[id] && sceneInit[id]();
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          overlay.classList.remove('fading-in');
+          overlay.classList.add('fading-out');
+        });
+      });
+    }, 800);
+  }, delay);
+}
+
+
+const ambienceEl = document.getElementById('audio-ambience');
+const btnSoundEl = document.getElementById('audio-btn');
+let audioUnlocked = false;
+
+function unlockAudio() {
+  if (audioUnlocked) return;
+  audioUnlocked = true;
+  ambienceEl.play().catch(() => {});
+  document.removeEventListener('click', unlockAudio);
+  document.removeEventListener('touchstart', unlockAudio);
+}
+document.addEventListener('click',      unlockAudio, { once: false });
+document.addEventListener('touchstart', unlockAudio, { once: false });
+
+function fadeOutAudio(el, duration = 800) {
+  const start = el.volume;
+  const steps = 20;
+  const step  = start / steps;
+  const interval = duration / steps;
+  const timer = setInterval(() => {
+    if (el.volume > step) {
+      el.volume -= step;
+    } else {
+      el.volume = 0;
+      el.pause();
+      clearInterval(timer);
+    }
+  }, interval);
+}
+
+/* QTE */
+const STORY = {
+  title: "Hospital Infiltration",
+  startScene: "hospitalHallway",
+  scenes: {
+    hospitalHallway: {
+      title: "The Hallway",
+      text: "That night, he finally sneaks into the hospital, moving through the hallways like a shadow, almost like he's been there before. As he gets deeper inside, something starts to feel wrong. The place pulls at him. His focus slips for a second, like the building is dragging up troubled memories he can't fully understand.\n\nThen he spots a nurse walking straight toward him. He's close now. If he gets caught here, it's over.",
+      timeLimit: 5,
+      timeoutChoice: 2,
+      choices: [
+        {
+          label: "Throw a glass jar on the floor to create a distraction.",
+          result: "The jar shatters somewhere down the hall. The nurse turns toward the sound, giving him the opening he needs.",
+          nextScene: "success"
+        },
+        {
+          label: "Knock over a trash can to make noise.",
+          result: "The crash echoes through the hallway. Messy, but effective. The nurse moves to investigate, and he slips past undetected.",
+          nextScene: "success"
+        },
+        {
+          label: "Hide behind a corner and wait for the nurse to pass by.",
+          result: "He presses himself against the wall and waits, but the pause costs him. The nurse notices movement and starts heading straight for him.",
+          nextScene: "failure"
+        }
+      ]
+    },
+    success: {
+      title: "Undetected",
+      text: "He makes it past without being seen and keeps moving deeper into the hospital.",
+      choices: [
+        {
+          label: "Continue",
+          result: "He disappears deeper into the building.",
+          nextScene: "END"
+        }
+      ]
+    },
+    failure: {
+      title: "Caught",
+      text: "The nurse sees him before he can recover. Whatever comes next, the quiet approach is over.",
+      choices: []
+    }
+  },
+  endings: {
+    success: {
+      title: "Outcome: Undetected",
+      text: "He gets past the nurse and continues deeper into the hospital without raising immediate alarm."
+    },
+    failure: {
+      title: "Outcome: Caught",
+      text: "He hesitates, gets spotted, and loses the advantage he had the second he entered the hallway."
+    }
+  }
+};
+
+class TimedChoiceGame {
+  constructor(story, rootSelector = "#game") {
+    this.story = story;
+    this.root = document.querySelector(rootSelector) || this.createRoot(rootSelector);
+    this.currentScene = story.startScene;
+    this.finalOutcome = null;
+    this.gameOver = false;
+    this.timer = null;
+    this.timeRemaining = 0;
+    this.timeLimit = 0;
+    this.ui = {};
+  }
+
+  createRoot(selector) {
+    const root = document.createElement("div");
+    root.id = selector.replace("#", "") || "game";
+    document.body.appendChild(root);
+    return root;
+  }
+
+  init() {
+    this.injectStyles();
+    this.buildUI();
+    this.renderScene();
+  }
+
+  buildUI() {
+    this.root.innerHTML = `
+      <div class="game-wrap">
+        <div class="game-header">
+          <h1>${this.story.title}</h1>
+          <button id="restart-button">Restart</button>
+        </div>
+
+        <div class="game-card">
+          <div id="scene-title" class="scene-title"></div>
+          <div id="scene-text" class="scene-text"></div>
+
+          <div id="timer-section">
+            <div class="timer-row">
+              <span>Time left</span>
+              <span id="time-value">0.0s</span>
+            </div>
+            <div class="timer-bar">
+              <div id="timer-fill" class="timer-fill"></div>
+            </div>
+          </div>
+
+          <div id="result-text" class="result-text"></div>
+          <div id="choices" class="choices"></div>
+        </div>
+
+        <div class="game-card">
+          <h2>History</h2>
+          <ul id="history" class="history"></ul>
+        </div>
+      </div>
+    `;
+
+    this.ui.sceneTitle = document.getElementById("scene-title");
+    this.ui.sceneText = document.getElementById("scene-text");
+    this.ui.timerSection = document.getElementById("timer-section");
+    this.ui.timeValue = document.getElementById("time-value");
+    this.ui.timerFill = document.getElementById("timer-fill");
+    this.ui.resultText = document.getElementById("result-text");
+    this.ui.choices = document.getElementById("choices");
+    this.ui.history = document.getElementById("history");
+
+    document.getElementById("restart-button").addEventListener("click", () => this.restart());
+  }
+
+  renderScene() {
+    const scene = this.story.scenes[this.currentScene];
+    if (!scene) {
+      return;
+    }
+
+    this.ui.sceneTitle.textContent = scene.title || "";
+    this.ui.sceneText.textContent = scene.text || "";
+    this.ui.resultText.textContent = "";
+    this.ui.choices.innerHTML = "";
+
+    const hasTimer = typeof scene.timeLimit === "number";
+    this.ui.timerSection.style.display = hasTimer ? "block" : "none";
+
+    scene.choices.forEach((choice, index) => {
+      const button = document.createElement("button");
+      button.className = "choice-button";
+      button.textContent = choice.label;
+      button.addEventListener("click", () => this.selectChoice(index, false));
+      this.ui.choices.appendChild(button);
+    });
+
+    if (hasTimer) {
+      this.startTimer(scene.timeLimit);
+    }
+  }
+
+selectChoice(choiceIndex, timedOut) {
+  if (this.gameOver) return;
+
+  const scene = this.story.scenes[this.currentScene];
+  const choice = scene?.choices?.[choiceIndex];
+  if (!choice) {
+    return;
+  }
+
+  this.stopTimer();
+  this.disableChoices();
+
+  this.ui.resultText.textContent = timedOut
+    ? `Time ran out. ${choice.result}`
+    : choice.result || "";
+
+  this.addHistory(
+    timedOut
+      ? `[Timeout] ${scene.title}: ${choice.label}`
+      : `${scene.title}: ${choice.label}`
+  );
+
+  if (choice.nextScene === "success" || choice.nextScene === "failure") {
+    this.finalOutcome = choice.nextScene;
+  }
+
+  if (choice.nextScene === "failure") {
+    this.gameOver = true;
+
+    setTimeout(() => {
+      this.ui.timerSection.style.display = "none";
+      this.ui.choices.innerHTML = "";
+      this.ui.sceneTitle.textContent = "Caught";
+      this.ui.sceneText.textContent =
+        "The nurse sees him before he can recover. Whatever comes next, the quiet approach is over.\n\nYou failed. Press the Restart button to try again.";
+      this.ui.resultText.textContent = "";
+      this.addHistory("Game over: failure");
+    }, 500);
+
+    return;
+  }
+
+  setTimeout(() => {
+    if (choice.nextScene === "END") {
+      this.showEnding();
+    } else {
+      this.currentScene = choice.nextScene;
+      this.renderScene();
+    }
+  }, 500);
+}
+  startTimer(seconds) {
+    this.stopTimer();
+    this.timeLimit = seconds;
+    this.timeRemaining = seconds;
+    this.updateTimer();
+
+    this.timer = setInterval(() => {
+      this.timeRemaining = Math.max(0, this.timeRemaining - 0.1);
+      this.updateTimer();
+
+      if (this.timeRemaining <= 0) {
+        this.stopTimer();
+        this.handleTimeout();
+      }
+    }, 100);
+  }
+
+  stopTimer() {
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
+    }
+  }
+
+  handleTimeout() {
+    const scene = this.story.scenes[this.currentScene];
+    const fallbackChoice = Number.isInteger(scene.timeoutChoice) ? scene.timeoutChoice : 0;
+    this.selectChoice(fallbackChoice, true);
+  }
+
+  updateTimer() {
+    const percent = this.timeLimit > 0 ? (this.timeRemaining / this.timeLimit) * 100 : 0;
+    this.ui.timeValue.textContent = `${this.timeRemaining.toFixed(1)}s`;
+    this.ui.timerFill.style.width = `${percent}%`;
+  }
+
+  disableChoices() {
+    this.ui.choices.querySelectorAll("button").forEach(button => {
+      button.disabled = true;
+    });
+  }
+
+  addHistory(text) {
+    const item = document.createElement("li");
+    item.textContent = text;
+    this.ui.history.appendChild(item);
+  }
+
+  showEnding() {
+    const ending = this.story.endings[this.finalOutcome] || {
+      title: "Ending",
+      text: "No ending found."
+    };
+
+    this.ui.timerSection.style.display = "none";
+    this.ui.choices.innerHTML = "";
+    this.ui.sceneTitle.textContent = ending.title;
+    this.ui.sceneText.textContent = ending.text;
+    this.ui.resultText.textContent = "";
+    this.addHistory(`Ending reached: ${ending.title}`);
+
+    setTimeout(() => {
+      goTo('scene-story4');
+    }, 3000);
+  }
+
+  restart() {
+    this.stopTimer();
+    this.gameOver = false;
+    this.currentScene = this.story.startScene;
+    this.finalOutcome = null;
+    this.ui.history.innerHTML = "";
+    this.renderScene();
+  }
+
+  injectStyles() {
+    if (document.getElementById("timed-choice-styles")) {
+      return;
+    }
+
+    const style = document.createElement("style");
+    style.id = "timed-choice-styles";
+    style.textContent = `
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: 'Cormorant Garamond', serif;
+        background: #000;
+        color: #e8e2d9;
+      }
+      .game-wrap {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 80px 20px;
+        text-align: center;
+      }
+      .game-header {
+        margin-bottom: 40px;
+      }
+      .game-card {
+        margin-bottom: 40px;
+      }
+      .scene-title {
+        font-size: 18px;
+        font-weight: 300;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: #9a9189;
+        margin-bottom: 24px;
+      }
+      .scene-text {
+        white-space: pre-line;
+        line-height: 1.6;
+        margin-bottom: 32px;
+        font-size: 16px;
+        color: #e8e2d9;
+      }
+      .timer-row {
+        margin-bottom: 16px;
+      }
+      .timer-bar {
+        width: 100%;
+        height: 4px;
+        background: #9a9189;
+        border-radius: 2px;
+        overflow: hidden;
+        margin-bottom: 16px;
+      }
+      .timer-fill {
+        width: 100%;
+        height: 100%;
+        background: #c8b89a;
+        transition: width 0.1s linear;
+      }
+      .result-text {
+        min-height: 24px;
+        margin-bottom: 24px;
+        color: #9a9189;
+        font-style: italic;
+      }
+      .choices {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 32px;
+      }
+      .choice-button,
+      #restart-button {
+        border: none;
+        border-radius: 0;
+        padding: 16px;
+        font-size: 16px;
+        font-family: 'Cormorant Garamond', serif;
+        background: transparent;
+        color: #e8e2d9;
+        border: 1px solid #9a9189;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .choice-button:hover {
+        background: #9a9189;
+        color: #000;
+      }
+      .choice-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      #restart-button {
+        background: #c8b89a;
+        color: #000;
+        border: 1px solid #c8b89a;
+        margin-top: 40px;
+      }
+      #restart-button:hover {
+        background: #e8e2d9;
+        border-color: #e8e2d9;
+      }
+      .history {
+        margin: 40px 0 0;
+        padding-left: 0;
+        text-align: left;
+        font-size: 14px;
+        color: #9a9189;
+      }
+    `;
+
+    document.head.appendChild(style);
+  }
+}
+
+const sceneInit = {};
+
+let phonePuzzleCompleted = false;
+
+sceneInit['scene-landing'] = function() {
+  const fadeEl = document.getElementById('landing-fade');
+  const btn    = document.getElementById('landing-btn');
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => { fadeEl.style.opacity = '0'; });
+  });
+
+  ambienceEl.volume = 1;
+  ambienceEl.currentTime = 0;
+  ambienceEl.play().catch(() => {});
+
+  let clicked = false;
+  btn.onclick = function() {
+    if (clicked) return;
+    clicked = true;
+
+    unlockAudio();
+    btnSoundEl.play().catch(() => {});
+    btn.style.opacity = '0';
+
+    fadeOutAudio(ambienceEl, 800);
+
+    setTimeout(() => { goTo('scene-story'); }, 1200);
+  };
+};
+
+sceneInit['scene-story'] = function() {
+  document.getElementById('scene-story').scrollTop = 0;
+
+  const storyAmbienceEl = document.getElementById('audio-story-ambience');
+  storyAmbienceEl.volume = 1;
+  storyAmbienceEl.currentTime = 0;
+  storyAmbienceEl.play().catch(() => {});
+
+
+  const storyEl = document.getElementById('scene-story');
+
+  const storyObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        if (entry.target.querySelector && entry.target.querySelector('.clock-time')) {
+          animateClock();
+        }
+      }
+    });
+  }, {
+    root: storyEl,
+    threshold: 0.15,
+    rootMargin: '0px 0px -60px 0px'
+  });
+
+  storyEl.querySelectorAll('.lines, .panel, .scene-action, .chapter-break').forEach(el => {
+    storyObserver.observe(el);
+  });
+
+  const piecesImg = document.getElementById('pieces');
+  if (piecesImg) {
+    piecesImg.onclick = function() {
+      goTo('scene-photo');
+    };
+  }
+};
+
+function animateClock() {
+  const clockTimes = document.querySelectorAll('.clock-time');
+  const beeps = document.querySelectorAll('.beep-sound');
+  clockTimes.forEach((time, index) => {
+    setTimeout(() => {
+      if (index > 0) clockTimes[index - 1].classList.add('hidden');
+      time.classList.remove('hidden');
+    }, index * 800);
+  });
+  beeps.forEach((beep, index) => {
+    setTimeout(() => {
+      beep.classList.remove('hidden');
+    }, (clockTimes.length - 1) * 800 + index * 300);
+  });
+}
+
+sceneInit['scene-photo'] = function() {
+  initPuzzle();
+};
+
+function initPuzzle() {
+  const puzzleEl  = document.getElementById('puzzle-area');
+  const pieces    = puzzleEl.querySelectorAll('.piece');
+  const frame     = document.getElementById('frame');
+  const SNAP_DIST = 40;
+
+  puzzleEl.querySelectorAll('.glow-spot').forEach(s => s.remove());
+
+  pieces.forEach(p => {
+    p.classList.remove('snapped', 'dragging', 'near-target');
+    p.style.zIndex = '';
+  });
+
+  function createGlowSpots() {
+    const frameRect = frame.getBoundingClientRect();
+    const areaRect  = puzzleEl.getBoundingClientRect();
+    pieces.forEach(piece => {
+      const spot = document.createElement('div');
+      spot.classList.add('glow-spot');
+      spot.dataset.pieceId = piece.id;
+      const tx = frameRect.left - areaRect.left + parseFloat(piece.dataset.targetX) * frameRect.width;
+      const ty = frameRect.top  - areaRect.top  + parseFloat(piece.dataset.targetY) * frameRect.height;
+      spot.style.left = tx + 'px';
+      spot.style.top  = ty + 'px';
+      puzzleEl.appendChild(spot);
+    });
+  }
+
+  const frameImg = document.getElementById('frame-img');
+  if (frameImg.complete) { createGlowSpots(); }
+  else { frameImg.addEventListener('load', createGlowSpots, { once: true }); }
+
+  const spawnWidth = window.innerWidth / 3 - 100;
+  pieces.forEach((piece, i) => {
+    piece.style.left   = (20 + Math.random() * Math.max(10, spawnWidth)) + 'px';
+    piece.style.top    = (30 + Math.random() * (window.innerHeight - 220)) + 'px';
+    piece.style.zIndex = 10 + i;
+  });
+
+  let active  = null;
+  let offsetX = 0;
+  let offsetY = 0;
+  let topZ    = 20;
+
+  pieces.forEach(piece => {
+    piece.addEventListener('mousedown', onDown);
+    piece.addEventListener('touchstart', onDown, { passive: false });
+  });
+
+  function onDown(e) {
+    if (e.currentTarget.classList.contains('snapped')) return;
+    e.preventDefault();
+    active = e.currentTarget;
+    active.classList.add('dragging');
+    topZ++;
+    active.style.zIndex = topZ;
+    const point = e.touches ? e.touches[0] : e;
+    const rect  = active.getBoundingClientRect();
+    offsetX = point.clientX - rect.left;
+    offsetY = point.clientY - rect.top;
+  }
+
+  function onMove(e) {
+    if (!active) return;
+    e.preventDefault();
+    const point = e.touches ? e.touches[0] : e;
+    active.style.left = (point.clientX - offsetX) + 'px';
+    active.style.top  = (point.clientY - offsetY) + 'px';
+    const frameRect = frame.getBoundingClientRect();
+    const tx = frameRect.left + parseFloat(active.dataset.targetX) * frameRect.width;
+    const ty = frameRect.top  + parseFloat(active.dataset.targetY) * frameRect.height;
+    const rect = active.getBoundingClientRect();
+    active.classList.toggle('near-target', Math.hypot(rect.left - tx, rect.top - ty) < SNAP_DIST);
+  }
+
+  function onUp(e) {
+    if (!active) return;
+    active.classList.remove('dragging');
+    active.classList.remove('near-target');
+    const point = e.changedTouches ? e.changedTouches[0] : e;
+    trySnap(active, point.clientX, point.clientY);
+    active = null;
+  }
+
+  const sceneEl = document.getElementById('scene-photo');
+  sceneEl.addEventListener('mousemove', onMove);
+  sceneEl.addEventListener('touchmove',  onMove, { passive: false });
+  sceneEl.addEventListener('mouseup',  onUp);
+  sceneEl.addEventListener('touchend', onUp);
+
+  function trySnap(piece, dropX, dropY) {
+    const frameRect = frame.getBoundingClientRect();
+    const areaRect  = puzzleEl.getBoundingClientRect();
+    const fw = frameRect.width;
+    const fh = frameRect.height;
+    const tx = frameRect.left + parseFloat(piece.dataset.targetX) * fw;
+    const ty = frameRect.top  + parseFloat(piece.dataset.targetY) * fh;
+    const rect = piece.getBoundingClientRect();
+    const dist = Math.hypot(rect.left - tx, rect.top - ty);
+
+    if (dist < SNAP_DIST) {
+      piece.style.left = (tx - areaRect.left) + 'px';
+      piece.style.top  = (ty - areaRect.top)  + 'px';
+      piece.classList.add('snapped');
+      piece.style.zIndex = 5;
+      const spot = puzzleEl.querySelector(`.glow-spot[data-piece-id="${piece.id}"]`);
+      if (spot) spot.style.opacity = '0';
+
+      const total   = puzzleEl.querySelectorAll('.piece').length;
+      const snapped = puzzleEl.querySelectorAll('.piece.snapped').length;
+      if (snapped === total) {
+        setTimeout(() => { goTo('scene-cutscene'); }, 1000);
+      }
+    }
+  }
+}
+
+sceneInit['scene-cutscene'] = function() {
+  const vid = document.getElementById('cutscene-video');
+
+  function blockScroll(e) { e.preventDefault(); }
+  window.addEventListener('wheel',     blockScroll, { passive: false });
+  window.addEventListener('touchmove', blockScroll, { passive: false });
+
+  vid.currentTime = 0;
+  vid.play().catch(() => {});
+
+  vid.addEventListener('ended', function handler() {
+    vid.removeEventListener('ended', handler);
+    window.removeEventListener('wheel',     blockScroll);
+    window.removeEventListener('touchmove', blockScroll);
+    setTimeout(() => { goTo('scene-main2'); }, 500);
+  });
+};
+
+sceneInit['scene-main2'] = function() {
+  setTimeout(() => { goTo('scene-story2'); }, 2000);
+};
+
+sceneInit['scene-story2'] = function() {
+  document.getElementById('scene-story2').scrollTop = 0;
+
+  const storyAmbienceEl = document.getElementById('audio-story-ambience');
+  storyAmbienceEl.volume = 1;
+  storyAmbienceEl.currentTime = 0;
+  storyAmbienceEl.play().catch(() => {});
+
+
+  const storyEl = document.getElementById('scene-story2');
+
+  const storyObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, {
+    root: storyEl,
+    threshold: 0.15,
+    rootMargin: '0px 0px -60px 0px'
+  });
+
+  storyEl.querySelectorAll('.lines, .panel, .scene-action, .chapter-break').forEach(el => {
+    storyObserver.observe(el);
+  });
+
+  const continueEl = document.getElementById('continue-story2');
+  if (continueEl) {
+    continueEl.onclick = function() {
+      goTo('scene-story3');
+    };
+  }
+};
+
+sceneInit['scene-story3'] = function() {
+  document.getElementById('scene-story3').scrollTop = 0;
+
+  const storyAmbienceEl = document.getElementById('audio-story-ambience');
+  storyAmbienceEl.volume = 1;
+  storyAmbienceEl.currentTime = 0;
+  storyAmbienceEl.play().catch(() => {});
+
+
+  const storyEl = document.getElementById('scene-story3');
+
+  const storyObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, {
+    root: storyEl,
+    threshold: 0.15,
+    rootMargin: '0px 0px -60px 0px'
+  });
+
+  storyEl.querySelectorAll('.lines, .panel, .scene-action, .chapter-break').forEach(el => {
+    storyObserver.observe(el);
+  });
+
+  const continueEl = document.getElementById('continue-story3');
+  if (continueEl) {
+    continueEl.onclick = function() {
+      goTo('scene-story3-video');
+    };
+  }
+};
+
+sceneInit['scene-story3-video'] = function() {
+  const video = document.getElementById('story3-video');
+  if (!video) return;
+
+  const storyAmbienceEl = document.getElementById('audio-story-ambience');
+  storyAmbienceEl.pause();
+
+  video.pause();
+  video.currentTime = 0;
+
+  video.onended = function() {
+    goTo('scene-75');
+  };
+
+  video.play().catch(() => {
+    console.log('Video autoplay was blocked.');
+  });
+};
+
+sceneInit['scene-75'] = function() {
+  document.getElementById('scene-75').scrollTop = 0;
+
+  const storyAmbienceEl = document.getElementById('audio-story-ambience');
+  storyAmbienceEl.volume = 1;
+  storyAmbienceEl.currentTime = 0;
+  storyAmbienceEl.play().catch(() => {});
+
+  const storyEl = document.getElementById('scene-75');
+
+  const storyObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, {
+    root: storyEl,
+    threshold: 0.15,
+    rootMargin: '0px 0px -60px 0px'
+  });
+
+  storyEl.querySelectorAll('.lines, .panel, .scene-action, .chapter-break').forEach(el => {
+    storyObserver.observe(el);
+  });
+
+  const continueEl = document.getElementById('continue-story75');
+  if (continueEl) {
+    continueEl.onclick = function() {
+      goTo('scene-timed');
+    };
+  }
+};
+
+sceneInit['scene-timed'] = function() {
+  new TimedChoiceGame(STORY).init();
+};
+
+sceneInit['scene-story4'] = function() {
+  document.getElementById('scene-story4').scrollTop = 0;
+
+  const storyAmbienceEl = document.getElementById('audio-story-ambience');
+  storyAmbienceEl.volume = 1;
+  storyAmbienceEl.currentTime = 0;
+  storyAmbienceEl.play().catch(() => {});
+
+
+  const storyEl = document.getElementById('scene-story4');
+
+  const storyObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, {
+    root: storyEl,
+    threshold: 0.15,
+    rootMargin: '0px 0px -60px 0px'
+  });
+
+  storyEl.querySelectorAll('.lines, .panel, .scene-action, .chapter-break').forEach(el => {
+    storyObserver.observe(el);
+  });
+
+  const continueEl = document.getElementById('continue-story4');
+  if (continueEl) {
+    continueEl.onclick = function() {
+      goTo('scene-story5');
+    };
+  }
+};
+
+sceneInit['scene-story5'] = function() {
+  document.getElementById('scene-story5').scrollTop = 0;
+
+
+  const storyAmbienceEl = document.getElementById('audio-story-ambience');
+  storyAmbienceEl.volume = 1;
+  storyAmbienceEl.currentTime = 0;
+  storyAmbienceEl.play().catch(() => {});
+
+
+  const storyEl = document.getElementById('scene-story5');
+
+  const storyObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, {
+    root: storyEl,
+    threshold: 0.15,
+    rootMargin: '0px 0px -60px 0px'
+  });
+
+  storyEl.querySelectorAll('.lines, .panel, .scene-action, .chapter-break').forEach(el => {
+    storyObserver.observe(el);
+  });
+
+  const continueEl = document.getElementById('continue-story5');
+  if (continueEl) {
+    continueEl.onclick = function() {
+      goTo('scene-cutscene2');
+    };
+  }
+};
+
+sceneInit['scene-story6'] = function() {
+  document.getElementById('scene-story6').scrollTop = 0;
+
+  const storyAmbienceEl = document.getElementById('audio-story-ambience');
+  storyAmbienceEl.volume = 1;
+  storyAmbienceEl.currentTime = 0;
+  storyAmbienceEl.play().catch(() => {});
+
+
+  const storyEl = document.getElementById('scene-story6');
+
+  const storyObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, {
+    root: storyEl,
+    threshold: 0.15,
+    rootMargin: '0px 0px -60px 0px'
+  });
+
+  storyEl.querySelectorAll('.lines, .panel, .scene-action, .chapter-break').forEach(el => {
+    storyObserver.observe(el);
+  });
+
+  const continueEl = document.getElementById('continue-story6');
+  if (continueEl) {
+    continueEl.onclick = function() {
+      goTo('scene-ending');
+    };
+  }
+};
+
+sceneInit['scene-ending'] = function() {
+  const counterEl = document.getElementById('ending-counter');
+  const btn1 = document.getElementById('ending-btn1');
+
+  const completed = phonePuzzleCompleted ? 1 : 0;
+  counterEl.textContent = `${completed}/1`;
+
+  if (phonePuzzleCompleted) {
+    btn1.style.opacity = '0.3';
+    btn1.style.pointerEvents = 'none';
+  } else {
+    btn1.style.opacity = '1';
+    btn1.style.pointerEvents = 'auto';
+    btn1.onclick = function() {
+      goTo('scene-phone-puzzle');
+    };
+  }
+
+  if (completed === 1) {
+    setTimeout(() => {
+      goTo('scene-waking-up');
+    }, 1000);
+  }
+};
+
+sceneInit['scene-phone-puzzle'] = function() {
+  initPhonePuzzle();
+};
+
+function initPhonePuzzle() {
+  const CORRECT_CODE = '874925613';
+  let currentEntry = '';
+
+  const display = document.getElementById('phone-display');
+  const message = document.getElementById('phone-message');
+  const numButtons = document.querySelectorAll('.phone-num-btn');
+  const clearBtn = document.getElementById('phone-clearBtn');
+  const submitBtn = document.getElementById('phone-submitBtn');
+
+  function updateDisplay() {
+    if (currentEntry.length === 0) {
+      display.textContent = '---------';
+    } else {
+      display.textContent = currentEntry.padEnd(9, '·');
+    }
+  }
+
+  const leftPanel = document.getElementById('phone-leftPanel');
+  const dragOverlay = document.getElementById('phone-dragOverlay');
+  let dragState = { active: false, startX: 0, startY: 0, origX: 0, origY: 0 };
+
+  function onDragStart(event) {
+    if (event.button !== undefined && event.button !== 0) return;
+    const pointerX = event.clientX || event.touches?.[0]?.clientX;
+    const pointerY = event.clientY || event.touches?.[0]?.clientY;
+    if (pointerX == null || pointerY == null) return;
+
+    dragState.active = true;
+    dragOverlay.classList.add('dragging');
+    dragState.startX = pointerX;
+    dragState.startY = pointerY;
+    dragState.origX = parseInt(dragOverlay.style.left || 20, 10);
+    dragState.origY = parseInt(dragOverlay.style.top || 20, 10);
+    event.preventDefault();
+  }
+
+  function onDragMove(event) {
+    if (!dragState.active) return;
+    const pointerX = event.clientX || event.touches?.[0]?.clientX;
+    const pointerY = event.clientY || event.touches?.[0]?.clientY;
+    if (pointerX == null || pointerY == null) return;
+
+    const deltaX = pointerX - dragState.startX;
+    const deltaY = pointerY - dragState.startY;
+
+    const panelRect = leftPanel.getBoundingClientRect();
+    const overlayRect = dragOverlay.getBoundingClientRect();
+
+    let nextX = dragState.origX + deltaX;
+    let nextY = dragState.origY + deltaY;
+
+    nextX = Math.max(0, Math.min(nextX, panelRect.width - overlayRect.width));
+    nextY = Math.max(0, Math.min(nextY, panelRect.height - overlayRect.height));
+
+    dragOverlay.style.left = `${nextX}px`;
+    dragOverlay.style.top = `${nextY}px`;
+    event.preventDefault();
+  }
+
+  function onDragEnd() {
+    dragState.active = false;
+    dragOverlay.classList.remove('dragging');
+  }
+
+  let messageTimeout = null;
+
+  function setMessage(text, type) {
+    message.textContent = text;
+    message.className = type ? `phone-message ${type}` : 'phone-message';
+  }
+
+  function clearMessageAfter(timeout) {
+    if (messageTimeout) {
+      clearTimeout(messageTimeout);
+    }
+    messageTimeout = setTimeout(() => {
+      setMessage('', '');
+      messageTimeout = null;
+    }, timeout);
+  }
+
+  numButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (currentEntry.length >= 9) return;
+      currentEntry += btn.dataset.num;
+      updateDisplay();
+      setMessage('', '');
+    });
+  });
+
+  clearBtn.addEventListener('click', () => {
+    currentEntry = '';
+    updateDisplay();
+    setMessage('Input cleared', '');
+    clearMessageAfter(2500);
+  });
+
+  submitBtn.addEventListener('click', () => {
+    if (currentEntry.length !== 9) {
+      setMessage('Please enter 9 digits before submitting.', 'error');
+      return;
+    }
+
+    if (currentEntry === CORRECT_CODE) {
+      setMessage('Pin Correct', 'success');
+      phonePuzzleCompleted = true;
+      setTimeout(() => {
+        goTo('scene-ending');
+      }, 2000);
+    } else {
+      setMessage('Pin Incorrect', 'error');
+      currentEntry = '';
+      updateDisplay();
+      clearMessageAfter(2500);
+    }
+  });
+
+  if (dragOverlay && leftPanel) {
+    dragOverlay.addEventListener('mousedown', onDragStart);
+    window.addEventListener('mousemove', onDragMove);
+    window.addEventListener('mouseup', onDragEnd);
+    dragOverlay.addEventListener('touchstart', onDragStart, { passive: false });
+    window.addEventListener('touchmove', onDragMove, { passive: false });
+    window.addEventListener('touchend', onDragEnd);
+  }
+
+  updateDisplay();
+}
+
+sceneInit['scene-cutscene2'] = function() {
+  const vid = document.getElementById('cutscene2-video');
+
+  function blockScroll(e) { e.preventDefault(); }
+  window.addEventListener('wheel',     blockScroll, { passive: false });
+  window.addEventListener('touchmove', blockScroll, { passive: false });
+
+  vid.currentTime = 0;
+  vid.play().catch(() => {});
+
+  vid.addEventListener('ended', function handler() {
+    vid.removeEventListener('ended', handler);
+    window.removeEventListener('wheel',     blockScroll);
+    window.removeEventListener('touchmove', blockScroll);
+    setTimeout(() => { goTo('scene-morse'); }, 500);
+  });
+};
+
+sceneInit['scene-morse'] = function() {
+  initMorse();
+};
+
+function initMorse() {
+  const TARGET_CODE = "...----..-.-..--.-----";
+  let morseInput = '';
+  let morseVideoPhase = 1;
+
+  const tapeEl     = document.getElementById('tape');
+  const cursorEl   = document.getElementById('morse-cursor');
+  const morseUiEl  = document.getElementById('morse-ui');
+  const vid        = document.getElementById('morse-bg-video');
+
+  // Reset
+  morseInput = '';
+  morseVideoPhase = 1;
+  tapeEl.textContent = '';
+  tapeEl.appendChild(cursorEl);
+  tapeEl.className = '';
+  morseUiEl.style.opacity = '0';
+
+  // Reset video
+  vid.loop = true;
+  vid.src  = 'assets/videos/morse1.mp4';
+  vid.load();
+  vid.play().catch(() => {});
+
+  function render() {
+    tapeEl.textContent = morseInput;
+    tapeEl.appendChild(cursorEl);
+    tapeEl.className = '';
+    if (!morseInput) return;
+    if (TARGET_CODE.startsWith(morseInput)) {
+      if (morseInput === TARGET_CODE) {
+        tapeEl.classList.add('ok');
+        triggerSuccess();
+      }
+    } else {
+      tapeEl.classList.add('wrong');
+    }
+  }
+
+  function addSymbol(s) { morseInput += s; render(); }
+  function deleteLast()  { if (!morseInput.length) return; morseInput = morseInput.slice(0, -1); render(); }
+
+  function triggerSuccess() {
+    morseUiEl.style.opacity = '0';
+    vid.loop = false;
+    vid.addEventListener('ended', playMorse3, { once: true });
+  }
+
+  function playMorse3() {
+    vid.loop = false;
+    vid.src = 'assets/videos/morse3.mp4';
+    vid.load();
+    vid.play().catch(() => {});
+    vid.addEventListener('ended', () => {
+      goTo('scene-story6');
+    }, { once: true });
+  }
+
+  function setupMorseBtn(btn, symbol) {
+    const img      = btn.querySelector('img');
+    const defSrc   = btn.dataset.default;
+    const hoverSrc = btn.dataset.hover;
+    const pressSrc = btn.dataset.press;
+    btn.addEventListener('mouseenter',  () => { img.src = hoverSrc; });
+    btn.addEventListener('mouseleave',  () => { img.src = defSrc; });
+    btn.addEventListener('mousedown',   (e) => { e.preventDefault(); img.src = pressSrc; });
+    btn.addEventListener('mouseup',     () => { img.src = hoverSrc; addSymbol(symbol); });
+    btn.addEventListener('touchstart',  (e) => { e.preventDefault(); img.src = pressSrc; }, { passive: false });
+    btn.addEventListener('touchend',    (e) => { e.preventDefault(); img.src = defSrc; addSymbol(symbol); });
+    btn.addEventListener('touchcancel', () => { img.src = defSrc; });
+  }
+
+  setupMorseBtn(document.getElementById('btn-dot'),  '.');
+  setupMorseBtn(document.getElementById('btn-dash'), '-');
+
+  function morseKeydown(e) {
+    if (!currentScene || currentScene.id !== 'scene-morse') return;
+    if (e.key === '.')       { addSymbol('.'); }
+    else if (e.key === '-')  { addSymbol('-'); }
+    else if (e.key === ' ')  { e.preventDefault(); addSymbol(' '); }
+    else if (e.key === 'Backspace') { e.preventDefault(); deleteLast(); }
+  }
+  document.addEventListener('keydown', morseKeydown);
+
+  // Restart button
+  document.getElementById('morse-restart-btn').onclick = () => { vid.currentTime = 0; };
+
+  // Mute button
+  const muteBtn = document.getElementById('morse-mute-btn');
+  muteBtn.onclick = () => {
+    vid.muted = !vid.muted;
+    muteBtn.querySelector('img').src = vid.muted
+      ? 'assets/morse/volume-off.png'
+      : 'assets/morse/volume-on.png';
+  };
+
+  // Video phase logic
+  vid.addEventListener('ended', () => {
+    if (morseVideoPhase === 1) {
+      vid.src = 'assets/videos/morse2.mp4';
+      vid.load();
+      vid.loop = true;
+      vid.play().catch(() => {});
+      morseVideoPhase = 2;
+    }
+  });
+
+  document.addEventListener('click', () => {
+    if (vid.paused) vid.play().catch(() => {});
+    vid.muted = false;
+    const img = muteBtn.querySelector('img');
+    if (img) img.src = 'assets/images/volume-on.png';
+  }, { once: true });
+
+  setTimeout(() => { morseUiEl.style.opacity = '1'; }, 4000);
+
+  render();
+}
+
+sceneInit['scene-waking-up'] = function() {
+  const vid = document.getElementById('waking-up-video');
+
+  function blockScroll(e) { e.preventDefault(); }
+  window.addEventListener('wheel',     blockScroll, { passive: false });
+  window.addEventListener('touchmove', blockScroll, { passive: false });
+
+  vid.currentTime = 0;
+  vid.play().catch(() => {});
+
+  vid.addEventListener('ended', function handler() {
+    vid.removeEventListener('ended', handler);
+    window.removeEventListener('wheel',     blockScroll);
+    window.removeEventListener('touchmove', blockScroll);
+    setTimeout(() => { goTo('scene-running-scene'); }, 500);
+  });
+};
+
+sceneInit['scene-running-scene'] = function() {
+  const vid = document.getElementById('running-scene-video');
+
+  function blockScroll(e) { e.preventDefault(); }
+  window.addEventListener('wheel', blockScroll, { passive: false });
+  window.addEventListener('touchmove', blockScroll, { passive: false });
+
+  vid.currentTime = 0;
+  vid.play().catch(() => {});
+
+  vid.addEventListener('ended', function handler() {
+    vid.removeEventListener('ended', handler);
+    window.removeEventListener('wheel', blockScroll);
+    window.removeEventListener('touchmove', blockScroll);
+
+    goTo('scene-final-text');
+  });
+};
+
+sceneInit['scene-final-text'] = function() {
+  document.getElementById('scene-final-text').scrollTop = 0;
+
+  const finalAudio = document.getElementById('audio-final-sting');
+  const finalScene = document.getElementById('scene-final-text');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, {
+    root: finalScene,
+    threshold: 0.15,
+    rootMargin: '0px 0px -60px 0px'
+  });
+
+  finalScene.querySelectorAll('.lines, .panel, .scene-action, .chapter-break').forEach(el => {
+    observer.observe(el);
+  });
+
+  if (finalAudio) {
+    finalAudio.pause();
+    finalAudio.currentTime = 0;
+
+    finalAudio.onended = function() {
+      finalAudio.onended = null;
+      goTo('scene-landing');
+    };
+
+    finalAudio.play().catch(() => {
+      goTo('scene-landing');
+    });
+  }
+};
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    goTo('scene-landing');
+  }, 100);
+});
+</script>
+<script src="timed_choice_game (1).js"></script>
+</body>
+</html>
