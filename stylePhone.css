@@ -1,0 +1,176 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Courier New', Courier, monospace;
+  background: #040404;
+  color: #ddd;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) 360px;
+  min-height: 100vh;
+}
+
+.left-panel {
+  position: relative;
+  background: url('images/puzzle1_background.png') center/95% no-repeat;
+  border-right: 2px solid rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+
+.right-panel {
+  display: grid;
+  place-items: center;
+  background: #080808;
+}
+
+.container {
+  width: min(360px, 90vw);
+  background: #101010;
+  padding: 24px;
+  border: 2px solid #eee;
+  border-radius: 10px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  text-align: center;
+  filter: contrast(0.8);
+}
+
+h1 {
+  margin-bottom: 8px;
+  font-size: 1.8rem;
+  text-shadow: 0 0 6px #fff;
+  letter-spacing: 0.05em;
+}
+
+p {
+  margin-bottom: 18px;
+  color: #ccc;
+  font-size: 0.95rem;
+}
+
+.display {
+  background: #020202;
+  color: #eee;
+  border: 2px dashed #fff;
+  padding: 14px;
+  border-radius: 8px;
+  letter-spacing: 0.4em;
+  font-size: 1.7rem;
+  margin-bottom: 16px;
+  min-height: 56px;
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.drag-overlay {
+  position: absolute;
+  width: 520px;
+  height: 510px;
+  top: 10px;
+  left: 10px;
+  background: url('images/puzzle1drag.png') center/contain no-repeat;
+  cursor: grab;
+  user-select: none;
+  z-index: 10;
+}
+
+.drag-overlay.dragging {
+  cursor: grabbing;
+  transform: scale(1.02);
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.keypad button {
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  box-shadow: none;
+}
+
+.keypad button:before {
+  display: none;
+}
+
+.keypad button img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+button {
+  border: 2px solid #bbb;
+  border-radius: 6px;
+  background: #0b0b0b;
+  color: #eee;
+  font-size: 1.2rem;
+  font-family: inherit;
+  padding: 14px 12px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+  transition: transform 0.12s ease, background 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  text-shadow: 0 0 2px #fff;
+}
+
+button:before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  right: 6px;
+  bottom: 6px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  pointer-events: none;
+}
+
+.keypad button:hover {
+  transform: none;
+  background: #0b0b0b;
+  box-shadow: none;
+}
+
+.keypad button:active {
+  transform: none;
+  background: #0b0b0b;
+}
+
+.num-btn {
+  font-weight: 700;
+}
+
+.action-btn {
+  background: #1f1f1f;
+  border-color: #fff;
+  font-weight: 700;
+}
+
+.message {
+  margin-top: 16px;
+  font-weight: 700;
+  min-height: 1.4em;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+}
+
+.message.success {
+  color: #b9f7a6;
+}
+
+.message.error {
+  color: #f08a8a;
+}

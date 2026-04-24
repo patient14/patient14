@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Patient 14</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Special+Elite&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --teal:      #2a6060;
+      --teal-dim:  #1a3535;
+      --teal-glow: #3a8080;
+      --bg:        #060808;
+      --text-dim:  #1e3a3a;
+      --text-mid:  #2a5555;
+      --text-on:   #5aafaf;
+      --mono: 'Share Tech Mono', monospace;
+      --elite: 'Special Elite', monospace;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      font-family: var(--mono);
+      color: var(--text-on);
+    }
+
+    /* ── BACKGROUND VIDEO ── */
+    #bg-video {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 1;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* scanlines overlay */
+    #scanlines {
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent 0px, transparent 3px,
+        rgba(0,0,0,0.13) 3px, rgba(0,0,0,0.13) 4px
+      );
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* ── MAIN UI ── */
+    #ui {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      opacity: 0;
+      transition: opacity 1s;
+    }
+
+    /* ── HEADER ── */
+    #header {
+      font-family: var(--elite);
+      font-size: 11px;
+      letter-spacing: 8px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    /* ── TAPE BOX ── */
+    #tape-wrap {
+      width: 100%;
+      max-width: 640px;
+      background-image: url('images/bar.png');
+      background-size: cover;
+      background-position: center;
+      border-radius: 4px;
+      padding: 18px 22px;
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      position: absolute;
+      top: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    #tape {
+      font-size: 26px;
+      letter-spacing: 5px;
+      color: #cccccc;
+      word-break: break-all;
+      line-height: 1.5;
+      flex: 1;
+      min-height: 34px;
+      transition: color 0.25s;
+    }
+
+    #tape.wrong { color: #6a2020; }
+    #tape.ok    { color: #1a6a3a; }
+
+    #cursor {
+      display: inline-block;
+      width: 2px;
+      height: 26px;
+      background: color(white);
+      margin-left: 3px;
+      vertical-align: middle;
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+
+    /* ── STATUS LINE ── */
+    #status {
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: var(--text-dim);
+      font-family: var(--elite);
+      min-height: 16px;
+      text-align: center;
+      transition: color 0.3s;
+    }
+    #status.ok  { color: #1a5a3a; }
+    #status.err { color: #6a1a1a; }
+
+    /* ── BUTTONS AREA ── */
+    #buttons {
+      display: flex;
+      gap: 40px;
+      align-items: flex-end;
+      position: absolute;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .btn-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-label {
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: var(--text-dim);
+      font-family: var(--elite);
+      text-transform: uppercase;
+    }
+
+    .morse-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      outline: none;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      display: inline-block;
+    }
+
+    .morse-btn img {
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: 96px;
+      max-height: 96px;
+      pointer-events: none;
+      transition: transform 0.15s ease;
+    }
+
+    .morse-btn:hover img {
+      transform: scale(1.1);
+    }
+
+    /* hover state: swap to dot2 via data-attrs handled in JS */
+    /* press state: swap to dot3 */
+
+    /* ── KEYBOARD HINT ── */
+    #kb-hint {
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: var(--text-dim);
+      text-align: center;
+    }
+
+    kbd {
+      display: inline-block;
+      background: #0a1414;
+      border: 1px solid var(--teal-dim);
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--text-mid);
+      letter-spacing: 1px;
+    }
+
+    /* ── DELETE BUTTON ── */
+    #del-btn {
+      background: none;
+      border: 1px solid var(--teal-dim);
+      border-radius: 4px;
+      color: var(--text-dim);
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 3px;
+      padding: 6px 14px;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.15s, color 0.15s;
+      align-self: center;
+    }
+    #del-btn:hover  { border-color: var(--teal); color: var(--text-mid); }
+    #del-btn:active { border-color: #6a1a1a; color: #6a1a1a; }
+
+    /* ── RESTART BUTTON ── */
+    #restart-btn,
+    #mute-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      outline: none;
+      transition: transform 0.15s ease;
+      position: absolute;
+    }
+
+    #restart-btn {
+      top: 20px;
+      right: 20px;
+    }
+
+    #mute-btn {
+      top: 20px;
+      left: 20px;
+    }
+
+    #restart-btn img,
+    #mute-btn img {
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: 50px;
+      max-height: 50px;
+      pointer-events: none;
+      transition: transform 0.15s ease;
+    }
+
+    #restart-btn:hover img,
+    #mute-btn:hover img,
+    #restart-btn:hover,
+    #mute-btn:hover {
+      transform: scale(1.1);
+    }
+
+    /* ── REF TOGGLE ── */
+    #ref-toggle {
+      font-size: 8px;
+      letter-spacing: 3px;
+      color: var(--text-dim);
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      font-family: var(--mono);
+      transition: color 0.2s;
+    }
+    #ref-toggle:hover { color: var(--text-mid); }
+
+    /* ── REF SHEET ── */
+    #ref-sheet {
+      display: none;
+      width: 100%;
+      max-width: 560px;
+      background: rgba(4, 10, 10, 0.92);
+      border: 1px solid var(--teal-dim);
+      border-radius: 4px;
+      padding: 16px 20px;
+    }
+    #ref-sheet.open { display: block; }
+
+    #ref-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px 8px;
+    }
+
+    .ref-item {
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+    }
+    .ref-item b {
+      color: var(--text-mid);
+      font-weight: normal;
+    }
+
+    /* ── SUCCESS / VIDEO OVERLAY ── */
+    #success-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      background: #000;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    #success-overlay.show { display: flex; }
+
+    #success-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    #close-hint {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 9px;
+      letter-spacing: 4px;
+      color: rgba(90,175,175,0.35);
+      font-family: var(--elite);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+<!-- looping background video -->
+<video id="bg-video" autoplay muted playsinline>
+  <source src="videos/morse1.mp4" type="video/mp4">
+</video>
+
+<div id="scanlines"></div>
+
+<div id="ui">
+
+  <!-- morse tape display -->
+  <div id="tape-wrap">
+    <div id="tape"><span id="cursor"></span></div>
+  </div>
+
+  <!-- dot + dash buttons -->
+  <div id="buttons">
+
+    <div class="btn-wrap">
+      <button class="morse-btn" id="btn-dot"
+        data-default="images/dot1.png"
+        data-hover="images/dot2.png"
+        data-press="images/dot3.png"
+        aria-label="dot">
+        <img src="images/dot1.png" alt="dot"/>
+      </button>
+    </div>
+
+    <div class="btn-wrap">
+      <button class="morse-btn" id="btn-dash"
+        data-default="images/dash1.png"
+        data-hover="images/dash2.png"
+        data-press="images/dash3.png"
+        aria-label="dash">
+        <img src="images/dash1.png" alt="dash"/>
+      </button>
+    </div>
+
+  </div>
+
+  <button id="restart-btn" aria-label="restart video"><img src="images/restart.png" alt="restart"/></button>
+
+  <button id="mute-btn" aria-label="toggle mute"><img src="images/volume-off.png" alt="volume"/></button>
+
+</div>
+
+<script>
+  const TARGET_CODE = "...----..-.-..--.-----";
+
+  let input = '';
+  let videoPhase = 1;
+
+  const tapeEl     = document.getElementById('tape');
+  const cursorEl   = document.getElementById('cursor');
+  const uiEl       = document.getElementById('ui');
+  const vid        = document.getElementById('bg-video');
+
+  /* ── RENDER ── */
+  function render() {
+    tapeEl.textContent = input;
+    tapeEl.appendChild(cursorEl);
+
+    const clean = input;
+    tapeEl.className = '';
+
+    if (!clean) {
+      return;
+    }
+
+    if (TARGET_CODE.startsWith(clean)) {
+      if (clean === TARGET_CODE) {
+        tapeEl.classList.add('ok');
+        triggerSuccess();
+      }
+    } else {
+      tapeEl.classList.add('wrong');
+    }
+  }
+
+  function addSymbol(s) {
+    input += s;
+    render();
+  }
+
+  function deleteLast() {
+    if (!input.length) return;
+    input = input.slice(0, -1);
+    render();
+  }
+
+  /* ── SUCCESS ── */
+  function triggerSuccess() {
+    // Fade out UI
+    uiEl.style.opacity = '0';
+    // Stop looping
+    vid.loop = false;
+    // When current video ends, play morse3
+    vid.addEventListener('ended', playMorse3, { once: true });
+  }
+
+  function playMorse3() {
+    vid.src = 'videos/morse3.mp4';
+    vid.load();
+    vid.play();
+    vid.addEventListener('ended', () => {
+      window.location.href = 'lol.html';
+    }, { once: true });
+  }
+
+  /* ── BUTTON IMAGE SWAP ── */
+  function setupMorseBtn(btn, symbol) {
+    const img      = btn.querySelector('img');
+    const defSrc   = btn.dataset.default;
+    const hoverSrc = btn.dataset.hover;
+    const pressSrc = btn.dataset.press;
+
+    btn.addEventListener('mouseenter',  () => { img.src = hoverSrc; });
+    btn.addEventListener('mouseleave',  () => { img.src = defSrc; btn.classList.remove('pressing'); });
+    btn.addEventListener('mousedown',   (e) => { e.preventDefault(); img.src = pressSrc; });
+    btn.addEventListener('mouseup',     () => { img.src = hoverSrc; addSymbol(symbol); });
+
+    btn.addEventListener('touchstart',  (e) => { e.preventDefault(); img.src = pressSrc; }, { passive: false });
+    btn.addEventListener('touchend',    (e) => { e.preventDefault(); img.src = defSrc; addSymbol(symbol); });
+    btn.addEventListener('touchcancel', () => { img.src = defSrc; });
+  }
+
+  setupMorseBtn(document.getElementById('btn-dot'),  '.');
+  setupMorseBtn(document.getElementById('btn-dash'), '-');
+
+  /* ── KEYBOARD ── */
+  document.addEventListener('keydown', e => {
+    if (e.key === '.')                      { addSymbol('.'); }
+    else if (e.key === '-')                 { addSymbol('-'); }
+    else if (e.key === ' ')                 { e.preventDefault(); addSymbol(' '); }
+    else if (e.key === 'Backspace')         { e.preventDefault(); deleteLast(); }
+  });
+
+  /* ── RESTART BUTTON ── */
+  document.getElementById('restart-btn').addEventListener('click', () => {
+    vid.currentTime = 0;
+  });
+
+  /* ── MUTE BUTTON ── */
+  const muteBtn = document.getElementById('mute-btn');
+  muteBtn.addEventListener('click', () => {
+    vid.muted = !vid.muted;
+    muteBtn.querySelector('img').src = vid.muted ? 'images/volume-off.png' : 'images/volume-on.png';
+  });
+
+  /* ── VIDEO SEQUENCE ── */
+  vid.addEventListener('error', (e) => {
+    console.log('Video error:', e);
+  });
+  vid.addEventListener('loadstart', () => {
+    console.log('Video load start');
+  });
+  vid.addEventListener('canplay', () => {
+    console.log('Video can play');
+  });
+  vid.addEventListener('ended', () => {
+    console.log('Video ended, phase:', videoPhase);
+    if (videoPhase === 1) {
+      // After morse1 ends, switch to morse2 loop
+      vid.src = 'videos/morse2.mp4';
+      vid.load();
+      vid.loop = true;
+      vid.play();
+      videoPhase = 2;
+    }
+  });
+
+  // Ensure video plays on user interaction if blocked
+  document.addEventListener('click', () => {
+    if (vid.paused) {
+      vid.play();
+    }
+    vid.muted = false;
+    const img = muteBtn.querySelector('img');
+    if (img) img.src = 'images/volume-on.png';
+  }, { once: true });
+
+  /* ── FADE IN UI ── */
+  setTimeout(() => {
+    uiEl.style.opacity = '1';
+  }, 4000);
+
+  render();
+</script>
+</body>
+</html>

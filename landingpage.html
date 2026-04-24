@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient 14</title>
+
+    <style>
+        @font-face {
+            font-family: 'CourierPolski1941';
+            src: url('fonts/zai_CourierPolski1941.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        .button {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 35px;
+            color: white;
+            font-family: 'Cormorant Garamond', serif;
+            cursor: pointer;
+            animation: float 5s ease-in-out infinite;
+            z-index: 10;
+            transition: opacity 0.5s ease;
+        }
+
+        @keyframes float {
+            0%   { transform: translateX(-50%) translateY(0); }
+            50%  { transform: translateX(-50%) translateY(-10px); }
+            100% { transform: translateX(-50%) translateY(0); }
+        }
+
+        #fade-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            opacity: 1;
+            z-index: 9999;
+            pointer-events: none;
+            transition: opacity 1s ease;
+        }
+
+        #black-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            opacity: 0;
+            z-index: 9998;
+            pointer-events: none;
+            transition: opacity 1.2s ease;
+        }
+    </style>
+</head>
+<body>
+
+<div id="fade-overlay"></div>
+<div id="black-overlay"></div>
+
+<video autoplay muted loop>
+    <source src="assets/videos/logo-background.mp4" type="video/mp4">
+</video>
+
+<audio id="ambience" src="assets/audio/landing-ambience.mp3" loop preload="auto"></audio>
+<audio id="btnSound" src="assets/audio/landing-button.mp3" preload="auto"></audio>
+
+<div class="button" id="button">Click to start</div>
+
+<script>
+    document.getElementById('ambience').play();
+    var clicked = false;
+    requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+            document.getElementById('fade-overlay').style.opacity = '0';
+        });
+    });
+
+    document.addEventListener('click', function startMusic() {
+        
+        document.removeEventListener('click', startMusic);
+    }, { once: true });
+
+    document.getElementById('button').addEventListener('click', function() {
+        if (clicked) return;
+        clicked = true;
+
+        document.getElementById('btnSound').play();
+
+        document.getElementById('button').style.opacity = '0';
+
+        var music = document.getElementById('ambience');
+        var fadeAudio = setInterval(function() {
+            if (music.volume > 0.05) {
+                music.volume -= 0.05;
+            } else {
+                music.volume = 0;
+                clearInterval(fadeAudio);
+            }
+        }, 80);
+
+        setTimeout(function() {
+            requestAnimationFrame(function() {
+                requestAnimationFrame(function() {
+                    document.getElementById('black-overlay').style.opacity = '1';
+                });
+            });
+        }, 800);
+
+        setTimeout(function() {
+            window.location.href = 'story.html';
+        }, 2200);
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient 14</title>
+  <link rel="stylesheet" href="cutscene.css">
+</head>
+<body>
+
+  <div id="video-section" class="locked">
+    <video id="intro-video" autoplay playsinline>
+      <source src="assets/videos/photoObtained.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <script>
+    const video = document.getElementById('intro-video');
+
+    function blockScroll(e) { e.preventDefault(); }
+    window.addEventListener('wheel',     blockScroll, { passive: false });
+    window.addEventListener('touchmove', blockScroll, { passive: false });
+    window.addEventListener('keydown', e => {
+      if (['ArrowUp','ArrowDown','PageUp','PageDown','Space','Home','End'].includes(e.code)) {
+        e.preventDefault();
+      }
+    });
+
+    video.addEventListener('ended', () => {
+      window.removeEventListener('wheel',     blockScroll);
+      window.removeEventListener('touchmove', blockScroll);
+      setTimeout(() => { window.location.href = 'main2.html'; }, 500);
+    });
+  </script>
+</body>
+</html>
